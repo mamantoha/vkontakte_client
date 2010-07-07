@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-require 'time'
 require 'digest/md5'
 require 'json'
 require 'mechanize'
