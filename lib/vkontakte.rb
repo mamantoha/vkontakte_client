@@ -123,11 +123,11 @@ module VK
 
     include HTTParty
 
-    base_uri 'http://api.vkontakte.ru'
-    default_params :v => '3.0', :format => 'JSON' # параметри по замовчуванню для радка запиту
-    format :json # дозволяє отримати результат відразу розфасований в Hash
-
-    #debug_output $stderr
+    base_uri 'http://api.vkontakte.ru'            # базовий URI, який використовується для всіх запитів
+    default_params :v => '3.0', :format => 'JSON' # параметри по замовчуванню для рядка запиту
+    format :json                                  # дозволяє отримати результат відразу розфасований в Hash
+    #http_proxy 'address', 'port'                 # параметри HTTP-проксі
+    #debug_output $stderr                         # вихідний потік для налагодження
 
     def initialize(api_id, mid, sid, secret)
       @api_id, @mid, @sid, @secret = api_id, mid, sid, secret
