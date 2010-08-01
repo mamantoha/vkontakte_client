@@ -68,8 +68,23 @@ module VK
     end
 
     def login!(email, pass)
+      #              1     (дозволити додатку присилати вам повідомлення)
+      # friends.*    2     (доступ до друзів)
+      # photos.*     4     (доступ до фотографій)
+      # audio.*      8     (доступ до аудіозаписів)
+      # video.*      16    (доступ до відеозаписів)
+      # offers.*     32    (доступ до пропозицій)
+      # questions.*  64    (доступ до запитань)
+      # pages.*      128   (доступ до wiki-сторінок)
+      #              256   (виводити посилання на додаток в меню зліва)
+      # wall.* -     512   (публікація на стінах користувачів)
+      # activity.*   1024  (оновлення статусу)
+      # notes.*      2048  (доступ до заміток)
+      # messages.*   4096  (доступ до повідомлень)
+      # wall.*       8192  (доступ до записів на вашій стіні)
 
-      login_url = "http://vk.com/login.php?app=#{@app_id}&layout=popup&type=browser&settings=130"
+      login_url = "http://vk.com/login.php?app=#{@app_id}&layout=popup&type=browser&settings=13854"
+      puts login_url
       login_page = @agent.get(login_url)
 
       login_form = login_page.form_with(:name => 'real_login')
@@ -123,7 +138,7 @@ module VK
 
     include HTTParty
 
-    base_uri 'http://api.vkontakte.ru'            # базовий URI, який використовується для всіх запитів
+    base_uri 'http://api.vk.com'            # базовий URI, який використовується для всіх запитів
     default_params :v => '3.0', :format => 'JSON' # параметри по замовчуванню для рядка запиту
     format :json                                  # дозволяє отримати результат відразу розфасований в Hash
     #http_proxy 'address', 'port'                 # параметри HTTP-проксі
