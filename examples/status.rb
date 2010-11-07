@@ -2,6 +2,16 @@
 
 require_relative '../lib/vkontakte'
 
+class String
+  def strtr(tr)
+    sorted_tr = tr.sort{|a, b| b[0] <=> a[0]}
+    keys = sorted_tr.map{|k, v| k}
+    values = sorted_tr.map{|k, v| v}
+    r = /(#{keys.map{|i| Regexp.escape(i)}.join( ')|(' )})/
+    self.gsub(r){|match| values[keys.index(match)]}
+  end
+end
+
 if __FILE__ == $0
   APP_ID = '1915108'
 
