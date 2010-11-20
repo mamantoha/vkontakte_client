@@ -39,8 +39,10 @@ if __FILE__ == $0
 
   puts "\nComplete"
 
-  second_circle.reject! {|uid, count| my_friends.include?(uid)}
+  # Відкидаємо своїх друзів а також людей, у яких тільки один спільний знайомий
+  second_circle.reject! {|uid, count| my_friends.include?(uid) || count < 2}
   puts "Total people in 2nd circle: #{second_circle.size}"
+  # Сортуємо по кількості спільних знайомих
   sorted_second_circle = second_circle.sort{|a, b| b[1]<=>a[1]} # <-- Hash sorting by value
   sorted_second_circle = sorted_second_circle[0...10]
 
