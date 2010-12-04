@@ -17,6 +17,7 @@ if __FILE__ == $0
   api = VK::API.new(APP_ID, mid, sid, secret)
 
   second_circle = {}
+  second_circle.default = 0
   # [uid, uid, ...]
   my_friends = api.friends_get()
   good_friends = 0
@@ -32,21 +33,21 @@ if __FILE__ == $0
       bad_friends += 1
       next
     end
-    friends.each do |f|
-      second_circle[f] = second_circle.fetch(uid, 0) + 1 # <-- http://www.wellho.net/mouth/991_Adding-a-member-to-a-Hash-in-Ruby.html
-    end
+    friends.each { |f| second_circle[f] += 1 }
   end
 
   puts "\nComplete"
 
   # Відкидаємо своїх друзів а також людей, у яких тільки один спільний знайомий
   second_circle.reject! {|uid, count| my_friends.include?(uid) || count < 2}
+
   puts "Total people in 2nd circle: #{second_circle.size}"
+
   # Сортуємо по кількості спільних знайомих
   sorted_second_circle = second_circle.sort{|a, b| b[1]<=>a[1]} # <-- Hash sorting by value
-  sorted_second_circle = sorted_second_circle[0...10]
 
-  #
+  sorted_second_circle = sorted_second_circle[0...20]
+
   # sorted_second_circle           # => [['uid1', 1], ['uid2', 2], ['uid3', 3]]
   # sorted_second_circle.transpose # => [["uid1", "uid2", "uid3"], [1, 2, 3]]
 
