@@ -6,7 +6,11 @@ require 'uri'
 require 'json'
 require_relative '../lib/vkontakte'
 
-APP_ID = '1915108'
+CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
+CLIENT_ID     = '1915108'
+
+
+vk = Client.new(CLIENT_ID, CLIENT_SECRET)
 
 #print 'Email: '
 #email = gets.chomp
@@ -17,15 +21,9 @@ email = 'anton.linux@gmail.com'
 #system "stty -echo"
 #pass = $stdin.gets.chomp
 #system "stty echo"
-pass = ''
+pass = 'vkontakte_forever'
 
-# Авторизація користувача за допомогою Desktop API
-vk = VK::DesktopAuth.new(APP_ID)
-vk.login!(email, pass)
-
-mid, sid, secret = vk.mid, vk.sid, vk.secret
-
-api = VK::API.new(APP_ID, mid, sid, secret)
+vk.login!(email, pass, 'messages')
 
 # Отримання даних, необхідних для підключення до Long Poll сервера
 # за допомогою методу messages.getLongPollServer:
@@ -33,7 +31,7 @@ api = VK::API.new(APP_ID, mid, sid, secret)
 # * server - адреса сервера до якого потрібно відправляти запит
 # * ts - номер останньої події, починаючи з якої ви хочете отримати дані
 #
-resp = api.messages_getLongPollServer
+resp = vk.api.messages_getLongPollServer
 key, server, ts = resp['key'], resp['server'], resp['ts']
 
 while true do
@@ -64,7 +62,7 @@ while true do
   #
   if params['failed'] == 2
     puts "[WARNING] Re-initilize Long Pool Server"
-    resp = api.messages_getLongPollServer
+    resp = vk.api.messages_getLongPollServer
     key, server, ts = resp['key'], resp['server'], resp['ts']
     next
   end
@@ -72,7 +70,7 @@ while true do
   if params['updates']
     params['updates'].each do |e|
       uid = e[1].abs
-      user = api.getProfiles(:uids => uid, :fields => 'sex').first
+      user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
       puts e if user.nil? # тут часом виникає помилка
       first_name = user['first_name']
       last_name = user['last_name']

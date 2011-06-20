@@ -1,179 +1,104 @@
 # -*- encoding: utf-8 -*-
 
-require 'digest/md5'
-require 'json'
+require 'oauth2'
 require 'mechanize'
-#require 'logger'
-require 'httparty'
 
-class Hash
-  # Hash#reject is like Hash#dup.delete_if
-  # h = {:a => 1, :b => 2, :c => 3}
-  # h.only :a, :b    # => {:a => 1, :b => 2}
-  # h.except :a, :b  # => {:c => 3}
-  #
-  def except(*blacklist)
-    self.reject{|k ,v| blacklist.include?(k)}
+# = Synopsis
+# The library is used
+#
+# == Example
+#   require 'rubygems'
+class Client
+  attr_reader :api
+
+  ##
+  # The version of <> you are using
+  VERSION = '1.0'
+
+  class Error < RuntimeError
   end
-  
-  def only(*whitelist)
-    self.reject{|k ,v| !whitelist.include?(k)}
+
+  def initialize(client_id, client_secret)
+    @client_id     = client_id
+    @client_secret = client_secret
+    @authorize     = false
+    @api           = nil
+
+    # http://vkontakte.ru/developers.php?o=-1&p=%C0%E2%F2%EE%F0%E8%E7%E0%F6%E8%FF
+    @client = OAuth2::Client.new(client_id, client_secret,
+                                 :site              => 'https://api.vk.com/',
+                                 :access_token_path => '/oauth/token',
+                                 :authorize_path    => '/oauth/authorize',
+                                 :parse_json        => true)
+
+
+  end
+
+  # http://vkontakte.ru/developers.php?o=-1&p=%CF%F0%E0%E2%E0%20%E4%EE%F1%F2%F3%EF%E0%20%EF%F0%E8%EB%EE%E6%E5%ED%E8%E9
+  #
+  def login!(email, pass, scope = 'friends')
+    agent = Mechanize.new{|agent| agent.user_agent_alias = 'Linux Konqueror'}
+
+    auth_url = @client.web_server.authorize_url(:redirect_uri => 'http://api.vk.com/blank.html', :scope => scope, :display => 'wap')
+
+    login_page = agent.get(auth_url)
+
+    login_form = login_page.forms.first
+    login_form.email = email
+    login_form.pass  = pass
+
+    verify_page = login_form.submit
+
+    if verify_page.uri.path == '/oauth/authorize'
+      if /m=4/.match(verify_page.uri.query)
+        raise Error, "Вказано невірний логін або пароль."
+      elsif /s=1/.match(verify_page.uri.query)
+        grant_access_page = verify_page.forms.first.submit
+      end
+    else
+      grant_access_page = verify_page
+    end
+
+    code = /code=(?<code>.*)/.match(grant_access_page.uri.fragment)['code']
+
+    @access_token = @client.web_server.get_access_token(code)
+    @access_token.token_param = 'access_token'
+
+    @api = API.new(@access_token)
+    @authorize = true
+  end
+
+  def authorized?
+    @authorize ? true : false
   end
 
 end
 
-
-module VK
-
-  # = Synopsis 
-  #
-  # == Example
-  #    require 'vk'
-  #    APP_ID = '1864195'
-  #    email = 'user@example.com'
-  #    pass = 'secret'
-  #    vk = VK::DesktopAuth.new(APP_ID)
-  #    vk.login!(email, pass)
-  #    mid, sid, secret = vk.mid, vk.sid, vk.secret
-  #    
-  class DesktopAuth
-    ##
-    #
-    attr_reader :app_id
-    attr_reader :mid
-    attr_reader :sid
-    attr_reader :secret
-    attr_reader :login
-
-    def initialize(app_id)
-      @login = false
-      @app_id = app_id
-
-      @agent = Mechanize.new{|a|
-        a.user_agent_alias = 'Linux Konqueror'
-        #a.log = Logger.new('vk.log')
-      }
-
-      yield self if block_given?
-    end
-
-    def login!(email, pass)
-      #              1     (дозволити додатку присилати вам повідомлення)
-      # friends.*    2     (доступ до друзів)
-      # photos.*     4     (доступ до фотографій)
-      # audio.*      8     (доступ до аудіозаписів)
-      # video.*      16    (доступ до відеозаписів)
-      # offers.*     32    (доступ до пропозицій)
-      # questions.*  64    (доступ до запитань)
-      # pages.*      128   (доступ до wiki-сторінок)
-      #              256   (виводити посилання на додаток в меню зліва)
-      # wall.* -     512   (публікація на стінах користувачів)
-      # activity.*   1024  (оновлення статусу)
-      # notes.*      2048  (доступ до заміток)
-      # messages.*   4096  (доступ до повідомлень)
-      # wall.*       8192  (доступ до записів на вашій стіні)
-
-      login_url = "http://vk.com/login.php?app=#{@app_id}&layout=popup&type=browser&settings=13854"
-      puts login_url
-      login_page = @agent.get(login_url)
-
-      login_form = login_page.form_with(:name => 'real_login')
-      login_form.email = email
-      login_form.pass = pass
-      verify_page = login_form.submit
-
-      if verify_page.uri.to_s == 'http://vk.com/login.php?act=auth_result&m=3'
-        raise "No such email address has been registered or your password is incorrect."
-      else
-        @login = true
-      end
-
-      params_page = verify_page.forms.first.submit
-      session_params = JSON::parse(/\((.*)\)/.match(params_page.body)[1])
-      @mid, @sid, @secret =  session_params['mid'], session_params['sid'], session_params['secret']
-
-      return @login
-
-    end
-
-    def set_proxy(host, port)
-      @agent.set_proxy(host, port)
-    end
-
+class API
+  def initialize(access_token)
+    @access_token = access_token
   end
 
-  # = Synopsis
-  # Клас для роботи з API Вконтакте.
-  #
-  # Після отримання сесії взаємодія з ВКонтакте API проводиться шляхом створення HTTP-запиту (POST або GET)
-  # до адреси API-сервісу http://api.vkontakte.ru або http://api.vk.com
-  #
-  # Опис методів API: http://vkontakte.ru/page2369282
-  #
-  # == Example
-  #    require 'vk'
-  #    APP_ID = '1864195'
-  #    email = 'user@example.com'
-  #    pass = 'secret'
-  #
-  #    vk = VK::DesktopAuth.new(APP_ID){|auth|
-  #      auth.login!(email, pass)
-  #    }
-  #    mid, sid, secret = vk.mid, vk.sid, vk.secret
-  #
-  #    api = VK::API.new(APP_ID, mid, sid, secret)
-  #    puts api.getProfiles({:uids => mid, :fields => 'photo_big,sex,country,city'})
-  #
-  class API
-
-    include HTTParty
-
-    base_uri 'http://api.vk.com'            # базовий URI, який використовується для всіх запитів
-    default_params :v => '3.0', :format => 'JSON' # параметри по замовчуванню для рядка запиту
-    format :json                                  # дозволяє отримати результат відразу розфасований в Hash
-    #http_proxy 'address', 'port'                 # параметри HTTP-проксі
-    #debug_output $stderr                         # вихідний потік для налагодження
-
-    def initialize(api_id, mid, sid, secret)
-      @api_id, @mid, @sid, @secret = api_id, mid, sid, secret
-      self.class.default_params :api_id => api_id, :sid => sid
+  def method_missing(method, *args)
+    vk_method = method.to_s.split('_').join('.')
+    response = execute(vk_method, *args)
+    if response['error']
+      raise "Error in `#{vk_method}': #{response['error']['error_code']}: #{response['error']['error_msg']}"
     end
 
-    def method_missing(method, *args)
-      vk_method = method.to_s.split('_').join('.')
-      response = execute(vk_method, *args)
-      if response['error']
-        raise VkException, "Error in `#{vk_method}': #{response['error']['error_code']}: #{response['error']['error_msg']}"
-      end
-
-      return response['response']
-    end
-
-    private
-
-    def execute(method, params = {})
-      query = params.update({:method => method})
-      sig_params = self.class.default_params.update(query)
-
-      self.class.post('/api.php', :query => query.update(:sig => sig(sig_params)))
-    end
-
-    ####
-    # Параметр sig рівний md5 від конкатенації наступних рядків:
-    #   <b>mid</b> - id поточного користувача, отриманий раніше при авторизації
-    #   пар <em>"parameter_name=parameter_value"</em>, розміщених у порядку зростання імені параметру(по алфавіту) за виключенням параметру <b>sid</b>
-    #   секрету сесії <b>secret</b>, отриманий раніше при авторизації
-    #
-    def sig(params)
-      sorted_params_in_string = params.except(:sid).sort {|a, b| a[0] <=> b[0]}.map {|i| "#{i[0]}=#{i[1]}" }.join
-      sig_string = "#{@mid}#{sorted_params_in_string}#{@secret}"
-      
-      return Digest::MD5.hexdigest(sig_string)
-    end
+    return response['response']
   end
 
-  class VkException < Exception
+  private
+
+  # http://vkontakte.ru/developers.php?o=-1&p=%C2%FB%EF%EE%EB%ED%E5%ED%E8%E5%20%E7%E0%EF%F0%EE%F1%EE%E2%20%EA%20API
+  def execute(method, params = {})
+    url = "/method/"
+    url << method
+    url << "?"
+    params.each{|key, value| url << "#{key}=#{value}&"}
+
+    @access_token.get(url)
   end
 
 end
-
