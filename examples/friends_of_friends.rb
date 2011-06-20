@@ -7,7 +7,7 @@ if __FILE__ == $0
   CLIENT_ID     = '1915108'
 
   email = 'anton.linux@gmail.com'
-  pass  = ''
+  pass  = ARGV[0] || ''
 
   vk = Client.new(CLIENT_ID, CLIENT_SECRET)
   vk.login!(email, pass)
@@ -26,7 +26,6 @@ if __FILE__ == $0
       good_friends += 1
     rescue => e
       # Permission to perform this action is denied by user
-      puts uid
       bad_friends += 1
       next
     end

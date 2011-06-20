@@ -7,7 +7,10 @@ require 'mechanize'
 # The library is used
 #
 # == Example
-#   require 'rubygems'
+#   require 'vkontakte'
+#   vk = Client.new(CLIENT_ID, CLIENT_SECRET)
+#   vk.login!(email, pass)
+#   friends = vk.api.friends_get(:fields => 'online')
 class Client
   attr_reader :api
 
