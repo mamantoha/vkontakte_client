@@ -7,7 +7,7 @@ if __FILE__ == $0
   CLIENT_ID     = '1915108'
 
   email = 'anton.linux@gmail.com'
-  pass  = 'vkontakte_forever'
+  pass  = ''
 
   vk = Client.new(CLIENT_ID, CLIENT_SECRET)
   vk.login!(email, pass)

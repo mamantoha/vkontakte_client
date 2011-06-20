@@ -21,7 +21,7 @@ email = 'anton.linux@gmail.com'
 #system "stty -echo"
 #pass = $stdin.gets.chomp
 #system "stty echo"
-pass = 'vkontakte_forever'
+pass = ''
 
 vk.login!(email, pass, 'messages')
 
