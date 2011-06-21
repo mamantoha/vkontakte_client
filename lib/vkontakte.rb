@@ -28,11 +28,14 @@ class Client
     @api           = nil
 
     # http://vkontakte.ru/developers.php?o=-1&p=%C0%E2%F2%EE%F0%E8%E7%E0%F6%E8%FF
-    @client = OAuth2::Client.new(client_id, client_secret,
-                                 :site              => 'https://api.vk.com/',
-                                 :access_token_path => '/oauth/token',
-                                 :authorize_path    => '/oauth/authorize',
-                                 :parse_json        => true)
+    @client = OAuth2::Client.new(
+      client_id,
+      client_secret,
+      :site              => 'https://api.vk.com/',
+      :access_token_path => '/oauth/token',
+      :authorize_path    => '/oauth/authorize',
+      :parse_json        => true
+    )
 
 
   end
@@ -42,7 +45,12 @@ class Client
   def login!(email, pass, scope = 'friends')
     agent = Mechanize.new{|agent| agent.user_agent_alias = 'Linux Konqueror'}
 
-    auth_url = @client.web_server.authorize_url(:redirect_uri => 'http://api.vk.com/blank.html', :scope => scope, :display => 'wap')
+    auth_url = @client.web_server.authorize_url(
+      :redirect_uri => 'http://api.vk.com/blank.html',
+      :scope        => scope,
+      :display      => 'wap'
+    )
+    puts auth_url
 
     login_page = agent.get(auth_url)
 

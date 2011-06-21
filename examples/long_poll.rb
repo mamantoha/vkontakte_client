@@ -17,11 +17,11 @@ vk = Client.new(CLIENT_ID, CLIENT_SECRET)
 email = 'anton.linux@gmail.com'
 
 # Hide password
-#print 'Password: '
-#system "stty -echo"
-#pass = $stdin.gets.chomp
-#system "stty echo"
-pass = ''
+print 'Password: '
+system "stty -echo"
+pass = $stdin.gets.chomp
+system "stty echo"
+#pass = ''
 
 vk.login!(email, pass, 'messages')
 

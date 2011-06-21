@@ -7,7 +7,12 @@ if __FILE__ == $0
   CLIENT_ID     = '1915108'
 
   email = 'anton.linux@gmail.com'
-  pass  = ARGV[0] || ''
+  # Hide password
+  print 'Password: '
+  system "stty -echo"
+  pass = $stdin.gets.chomp
+  system "stty echo"
+  #pass = ''
 
   vk = Client.new(CLIENT_ID, CLIENT_SECRET)
   vk.login!(email, pass)
@@ -42,7 +47,7 @@ if __FILE__ == $0
   # Сортуємо по кількості спільних знайомих
   sorted_second_circle = second_circle.sort{|a, b| b[1]<=>a[1]} # <-- Hash sorting by value
 
-  sorted_second_circle = sorted_second_circle[0...20]
+  sorted_second_circle = sorted_second_circle[0...40]
 
   # sorted_second_circle           # => [['uid1', 1], ['uid2', 2], ['uid3', 3]]
   # sorted_second_circle.transpose # => [["uid1", "uid2", "uid3"], [1, 2, 3]]
