@@ -43,6 +43,7 @@ class Client
   # http://vkontakte.ru/developers.php?o=-1&p=%CF%F0%E0%E2%E0%20%E4%EE%F1%F2%F3%EF%E0%20%EF%F0%E8%EB%EE%E6%E5%ED%E8%E9
   #
   def login!(email, pass, scope = 'friends')
+    # Create a new mechanize object
     agent = Mechanize.new{|agent| agent.user_agent_alias = 'Linux Konqueror'}
 
     auth_url = @client.web_server.authorize_url(
@@ -52,9 +53,11 @@ class Client
     )
     puts auth_url
 
+    # Get the Vkontakte sing in page
     login_page = agent.get(auth_url)
 
-    login_form = login_page.forms.first
+    # Fill out the login form
+    login_form       = login_page.forms.first
     login_form.email = email
     login_form.pass  = pass
 
@@ -62,7 +65,7 @@ class Client
 
     if verify_page.uri.path == '/oauth/authorize'
       if /m=4/.match(verify_page.uri.query)
-        raise Error, "Вказано невірний логін або пароль."
+        raise Error, "Incorrect login or password"
       elsif /s=1/.match(verify_page.uri.query)
         grant_access_page = verify_page.forms.first.submit
       end

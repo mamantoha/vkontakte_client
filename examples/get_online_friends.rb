@@ -6,8 +6,14 @@ if __FILE__ == $0
   CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
   CLIENT_ID     = '1915108'
 
-  email = 'anton.linux@gmail.com'
-  pass  = ''
+  puts email = 'anton.linux@gmail.com'
+  # Hide password
+  print 'Password: '
+  system "stty -echo"
+  pass = $stdin.gets.chomp
+  system "stty echo"
+
+  #pass  = ARGV[0] || ''
 
   vk = Client.new(CLIENT_ID, CLIENT_SECRET)
   vk.login!(email, pass)
