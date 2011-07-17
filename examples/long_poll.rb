@@ -61,16 +61,37 @@ while true do
   # використовуючи метод messages.getLongPollServer
   #
   if params['failed'] == 2
-    puts "[WARNING] Re-initilize Long Pool Server"
-    resp = vk.api.messages_getLongPollServer
-    key, server, ts = resp['key'], resp['server'], resp['ts']
+    puts "[INFO] Re-initilize Long Pool Server"
+
+    begin
+      resp = vk.api.messages_getLongPollServer
+      key, server, ts = resp['key'], resp['server'], resp['ts']
+    rescue VkException => e
+      if e.error_code == 5
+        puts "[ERROR] User authorization failed: access_token have heen expired"
+        puts "[INFO] Getting a new access_token"
+        vk.login!(email, pass, 'messages')
+        retry
+      end
+    end
+
     next
   end
 
   if params['updates']
     params['updates'].each do |e|
       uid = e[1].abs
-      user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
+      # `method_missing': Error in `getProfiles': 5: User authorization failed: access_token have heen expired.
+      begin
+        user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
+      rescue VkException => e
+        if e.error_code == 5
+          puts "[ERROR] User authorization failed: access_token have heen expired"
+          puts "[INFO] Getting a new access_token"
+          vk.login!(email, pass, 'messages')
+          retry
+        end
+      end
       puts e if user.nil? # тут часом виникає помилка
       first_name = user['first_name']
       last_name = user['last_name']

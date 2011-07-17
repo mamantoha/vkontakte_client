@@ -97,7 +97,9 @@ class API
     vk_method = method.to_s.split('_').join('.')
     response = execute(vk_method, *args)
     if response['error']
-      raise "Error in `#{vk_method}': #{response['error']['error_code']}: #{response['error']['error_msg']}"
+      error_code = response['error']['error_code']
+      error_msg  = response['error']['error_msg']
+      raise VkException.new(vk_method, error_code, error_msg), "Error in `#{vk_method}': #{error_code}: #{error_msg}"
     end
 
     return response['response']
@@ -115,4 +117,14 @@ class API
     @access_token.get(url)
   end
 
+end
+
+class VkException < Exception
+  attr_reader :vk_method, :error_code, :error_msg
+
+  def initialize(vk_method, error_code, error_msg)
+    @vk_method  = vk_method
+    @error_code = error_code.to_i
+    @error_msg  = error_msg
+  end
 end
