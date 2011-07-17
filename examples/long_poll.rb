@@ -66,8 +66,8 @@ while true do
     begin
       resp = vk.api.messages_getLongPollServer
       key, server, ts = resp['key'], resp['server'], resp['ts']
-    rescue VkException => e
-      if e.error_code == 5
+    rescue VkException => ex
+      if ex.error_code == 5
         puts "[ERROR] User authorization failed: access_token have heen expired"
         puts "[INFO] Getting a new access_token"
         vk.login!(email, pass, 'messages')
@@ -84,8 +84,8 @@ while true do
       # `method_missing': Error in `getProfiles': 5: User authorization failed: access_token have heen expired.
       begin
         user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
-      rescue VkException => e
-        if e.error_code == 5
+      rescue VkException => ex
+        if ex.error_code == 5
           puts "[ERROR] User authorization failed: access_token have heen expired"
           puts "[INFO] Getting a new access_token"
           vk.login!(email, pass, 'messages')
