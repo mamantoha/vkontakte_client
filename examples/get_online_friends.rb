@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-require_relative '../lib/vkontakte'
+require '../lib/vkontakte'
 
 if __FILE__ == $0
   CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
