@@ -31,10 +31,9 @@ class Client
     @client = OAuth2::Client.new(
       client_id,
       client_secret,
-      :site              => 'https://api.vk.com/',
-      :access_token_path => '/oauth/token',
-      :authorize_path    => '/oauth/authorize',
-      :parse_json        => true
+      :site          => 'https://api.vk.com/',
+      :token_url     => '/oauth/token',
+      :authorize_url => '/oauth/authorize'
     )
 
 
@@ -46,7 +45,7 @@ class Client
     # Create a new mechanize object
     agent = Mechanize.new{|agent| agent.user_agent_alias = 'Linux Konqueror'}
 
-    auth_url = @client.web_server.authorize_url(
+    auth_url = @client.auth_code.authorize_url(
       :redirect_uri => 'http://api.vk.com/blank.html',
       :scope        => scope,
       :display      => 'wap'
@@ -75,8 +74,9 @@ class Client
 
     code = /code=(?<code>.*)/.match(grant_access_page.uri.fragment)['code']
 
-    @access_token = @client.web_server.get_access_token(code)
-    @access_token.token_param = 'access_token'
+    @access_token = @client.auth_code.get_token(code)
+    @access_token.options[:param_name] = 'access_token'
+    @access_token.options[:mode] = :query
 
     @api = API.new(@access_token)
     @authorize = true
@@ -95,7 +95,7 @@ class API
 
   def method_missing(method, *args)
     vk_method = method.to_s.split('_').join('.')
-    response = execute(vk_method, *args)
+    response = execute(vk_method, *args).parsed
     if response['error']
       error_code = response['error']['error_code']
       error_msg  = response['error']['error_msg']
@@ -109,12 +109,9 @@ class API
 
   # http://vkontakte.ru/developers.php?o=-1&p=%C2%FB%EF%EE%EB%ED%E5%ED%E8%E5%20%E7%E0%EF%F0%EE%F1%EE%E2%20%EA%20API
   def execute(method, params = {})
-    url = "/method/"
-    url << method
-    url << "?"
-    params.each{|key, value| url << "#{key}=#{value}&"}
+    method = "/method/#{method}"
 
-    @access_token.get(url)
+    @access_token.get(method, :params => params, :parce => :json)
   end
 
 end
