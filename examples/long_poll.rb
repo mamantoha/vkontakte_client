@@ -1,16 +1,20 @@
 # -*- encoding: utf-8 -*-
 
+require 'bundler'
+Bundler.setup :default
+
+require 'vkontakte'
+
 require 'date'
 require 'net/http'
 require 'uri'
 require 'json'
-require_relative '../lib/vkontakte'
 
 CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
 CLIENT_ID     = '1915108'
 
 
-vk = Client.new(CLIENT_ID, CLIENT_SECRET)
+vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
 
 #print 'Email: '
 #email = gets.chomp
@@ -66,7 +70,7 @@ while true do
     begin
       resp = vk.api.messages_getLongPollServer
       key, server, ts = resp['key'], resp['server'], resp['ts']
-    rescue VkException => ex
+    rescue Vkontakte::VkException => ex
       if ex.error_code == 5
         puts "[ERROR] User authorization failed: access_token have heen expired"
         puts "[INFO] Getting a new access_token"
@@ -84,7 +88,7 @@ while true do
       # `method_missing': Error in `getProfiles': 5: User authorization failed: access_token have heen expired.
       begin
         user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
-      rescue VkException => ex
+      rescue Vkontakte::VkException => ex
         if ex.error_code == 5
           puts "[ERROR] User authorization failed: access_token have heen expired"
           puts "[INFO] Getting a new access_token"

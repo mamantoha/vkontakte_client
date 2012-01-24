@@ -1,6 +1,11 @@
 # -*- encoding: utf-8 -*-
 
-require '../lib/vkontakte'
+require 'bundler'
+Bundler.setup :default
+
+require 'vkontakte'
+
+puts Vkontakte::VERSION
 
 if __FILE__ == $0
   CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
@@ -15,7 +20,7 @@ if __FILE__ == $0
 
   #pass  = ARGV[0] || ''
 
-  vk = Client.new(CLIENT_ID, CLIENT_SECRET)
+  vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
   vk.login!(email, pass)
 
 #=begin
