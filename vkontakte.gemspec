@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/vkontakte/version', __FILE__)
+$:.push File.expand_path("../lib", __FILE__)
+require 'vkontakte/version'
 
 Gem::Specification.new do |gem|
   gem.add_dependency 'mechanize', '~> 2.0'

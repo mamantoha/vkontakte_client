@@ -8,5 +8,5 @@ require_relative 'vkontakte/version'
 module Vkontakte
   autoload :Client, 'vkontakte/client'
   autoload :API, 'vkontakte/api'
-  autoload :VkException, 'vkontakte/vkexceprion'
+  autoload :VkException, 'vkontakte/vkexception'
 end
