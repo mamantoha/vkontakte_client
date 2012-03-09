@@ -10,9 +10,6 @@ module Vkontakte
   class Client
     attr_reader :api
 
-    class Error < RuntimeError
-    end
-
     def initialize(client_id, client_secret)
       @client_id     = client_id
       @client_secret = client_secret
@@ -28,7 +25,6 @@ module Vkontakte
         :authorize_url => '/oauth/authorize'
       )
 
-
     end
 
     # http://vkontakte.ru/developers.php?o=-1&p=%CF%F0%E0%E2%E0%20%E4%EE%F1%F2%F3%EF%E0%20%EF%F0%E8%EB%EE%E6%E5%ED%E8%E9
@@ -42,7 +38,6 @@ module Vkontakte
         :scope        => scope,
         :display      => 'wap'
       )
-      puts auth_url
 
       # Get the Vkontakte sing in page
       login_page = agent.get(auth_url)
@@ -56,7 +51,7 @@ module Vkontakte
 
       if verify_page.uri.path == '/oauth/authorize'
         if /m=4/.match(verify_page.uri.query)
-          raise Error, "Incorrect login or password"
+          raise "Incorrect login or password"
         elsif /s=1/.match(verify_page.uri.query)
           grant_access_page = verify_page.forms.first.submit
         end
