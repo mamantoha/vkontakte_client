@@ -25,7 +25,7 @@ if __FILE__ == $0
   second_circle = {}
   second_circle.default = 0
   # [uid, uid, ...]
-  my_friends = vk.api.friends_get()
+  my_friends = vk.api.friends_get
   good_friends = 0
   bad_friends = 0
 

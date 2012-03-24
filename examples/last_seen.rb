@@ -23,11 +23,14 @@ if __FILE__ == $0
 
   # http://vkontakte.ru/developers.php?o=-1&p=friends.get
   tb = Time.now
-  friends = vk.api.friends_get(count: 20, order: 'hints', fields: 'online,last_seen')
+  friends = vk.api.friends_get(fields: 'online,last_seen')
 
-  friends.each do |f|
+  # sort an array of hashes by a value in the hash
+  sorted_friends = friends.sort_by {|k| k['last_seen']['time']}
+
+  sorted_friends.last(20).each do |f|
     last_seen = Time.at(f['last_seen']['time'])
-    puts "[#{f['uid']}] -#{last_seen}- #{f['first_name']} #{f['last_name']}" unless f['online'] == 1
+    puts "#{last_seen}: #{f['first_name']} #{f['last_name']}" unless f['online'] == 1
   end
 
 end

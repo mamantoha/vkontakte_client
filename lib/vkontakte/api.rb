@@ -1,7 +1,7 @@
 module Vkontakte
   class API
     def initialize(access_token)
-      # OAuth2::AccessToken
+      # if access_token.instance_of? OAuth2::AccessToken
       @access_token = access_token
     end
 
