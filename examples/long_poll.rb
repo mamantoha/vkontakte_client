@@ -90,7 +90,7 @@ while true do
         user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
       rescue Vkontakte::VkException => ex
         if ex.error_code == 5
-          puts "[ERROR] User authorization failed: access_token have heen expired"
+          puts "[ERROR] #{ex.error_msg}"
           puts "[INFO] Getting a new access_token"
           vk.login!(email, pass, 'messages')
           retry

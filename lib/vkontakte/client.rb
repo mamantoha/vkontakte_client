@@ -59,7 +59,7 @@ module Vkontakte
         grant_access_page = verify_page
       end
 
-      code = /code=(?<code>.*)/.match(grant_access_page.uri.fragment)['code']
+      code = /code=(?<code>.*)/.match(grant_access_page.uri.query)['code']
 
       @access_token = @client.auth_code.get_token(code)
       @access_token.options[:param_name] = 'access_token'

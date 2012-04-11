@@ -28,9 +28,11 @@ if __FILE__ == $0
   # sort an array of hashes by a value in the hash
   sorted_friends = friends.sort_by {|k| k['last_seen']['time']}
 
-  sorted_friends[0...20].each do |f|
+  #sorted_friends[0...20].each do |f|
+  sorted_friends.each do |f|
     last_seen = Time.at(f['last_seen']['time'])
-    puts "#{last_seen}: #{f['first_name']} #{f['last_name']}" unless f['online'] == 1
+    #puts "#{last_seen}: #{f['first_name']} #{f['last_name']}" unless f['online'] == 1
+    puts "#{last_seen}: #{f['first_name']} #{f['last_name']}"
   end
 
 end
