@@ -13,6 +13,8 @@ require 'json'
 CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
 CLIENT_ID     = '1915108'
 
+offline = "\033[31;3mофлайн\033[0m"
+online = "\033[32;3mонлайн\033[0m"
 
 vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
 
@@ -102,9 +104,9 @@ while true do
       state = ['стало', 'стала', 'став'][user['sex'].to_i]
       case e[0]
       when 8 then
-        puts "#{Time.now.strftime("%d/%m/%y %H:%M:%S")}: #{first_name} #{last_name} #{state} онлайн"
+        puts "#{Time.now.strftime("%d/%m/%y %H:%M:%S")}: #{first_name} #{last_name} #{state} #{online}"
       when 9 then
-        puts "#{Time.now.strftime("%d/%m/%y %H:%M:%S")}: #{first_name} #{last_name} #{state} оффлайн"
+        puts "#{Time.now.strftime("%d/%m/%y %H:%M:%S")}: #{first_name} #{last_name} #{state} #{offline}"
       end
     end
   end
