@@ -1,3 +1,8 @@
+# -*- encoding: utf-8 -*-
+
+require 'mechanize'
+require 'logger'
+
 module Vkontakte
   # = Synopsis
   # The library is used
@@ -31,7 +36,10 @@ module Vkontakte
     #
     def login!(email, pass, scope = 'friends')
       # Create a new mechanize object
-      agent = Mechanize.new{|agent| agent.user_agent_alias = 'Linux Konqueror'}
+      agent = Mechanize.new { |agent|
+        agent.user_agent_alias = 'Linux Konqueror'
+        agent.log = Logger.new($stdout)
+      }
 
       auth_url = @client.auth_code.authorize_url(
         :redirect_uri => 'http://api.vk.com/blank.html',

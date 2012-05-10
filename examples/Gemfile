@@ -1,3 +1,4 @@
 source :rubygems
 
+gem 'mechanize', '2,4'
 gem 'vkontakte', :path => '../'

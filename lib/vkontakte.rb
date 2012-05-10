@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 require 'oauth2'
-require 'mechanize'
 
 require_relative 'vkontakte/version'
 
