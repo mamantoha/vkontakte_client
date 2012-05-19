@@ -5,9 +5,23 @@ module Vkontakte
       @access_token = access_token
     end
 
-    def method_missing(method, *args)
+    # http://vkontakte.ru/developers.php?o=-1&p=%C2%FB%EF%EE%EB%ED%E5%ED%E8%E5%20%E7%E0%EF%F0%EE%F1%EE%E2%20%EA%20API
+    #
+    # Перехват неизвестных методов для делегирования серверу ВКонтакте.
+    #
+    # Выполняет вызов метода API ВКонтакте.
+    # * `method`: имя метода ВКонтакте.
+    # * `params`: хэш с именованными аргументами метода ВКонтакте.
+    #
+    # Следует заметить, что название вызываемих методов оформлены в стиле Ruby.
+    # для вызова метода API ВКонтакте `friends.get`, вам необходиме передать `method='friends_get'`
+    #
+    # Возвращаемое значение: хэш с результатами вызова.
+    # Генерируемые исключения: `Vkontakte::VkException` если сервер ВКонтакте вернул ошибку.
+    #
+    def method_missing(method, *params)
       vk_method = method.to_s.split('_').join('.')
-      response = execute(vk_method, *args).parsed
+      response = execute(vk_method, *params).parsed
       if response['error']
         error_code = response['error']['error_code']
         error_msg  = response['error']['error_msg']
@@ -19,10 +33,8 @@ module Vkontakte
 
     private
 
-    # http://vkontakte.ru/developers.php?o=-1&p=%C2%FB%EF%EE%EB%ED%E5%ED%E8%E5%20%E7%E0%EF%F0%EE%F1%EE%E2%20%EA%20API
     def execute(method, params = {})
       method = "/method/#{method}"
-
       @access_token.get(method, :params => params, :parce => :json)
     end
 
