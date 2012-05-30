@@ -22,6 +22,8 @@ if __FILE__ == $0
   vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
   vk.login!(email, pass)
 
+  current_user = vk.api.getUserInfo['user_id'].to_i
+
   second_circle = {}
   second_circle.default = 0
   # [uid, uid, ...]
@@ -34,7 +36,7 @@ if __FILE__ == $0
       print "Parsing your friends: #{index + 1} of #{my_friends.size}. Good: #{good_friends}. Bad: #{bad_friends}\r"
       friends = vk.api.friends_get(:uid => uid)
       good_friends += 1
-    rescue => e
+    rescue Vkontakte::VkException => err
       # Permission to perform this action is denied by user
       bad_friends += 1
       next
@@ -44,12 +46,12 @@ if __FILE__ == $0
 
   puts "\nComplete"
 
-  # Відкидаємо своїх друзів а також людей, у яких тільки один спільний знайомий
-  second_circle.reject! {|uid, count| my_friends.include?(uid) || count < 2}
+  # Отбросим друзей и людей, у которых только один общий знакомый
+  second_circle.reject! {|uid, count| my_friends.include?(uid) || current_user == uid || count < 2}
 
   puts "Total people in 2nd circle: #{second_circle.size}"
 
-  # Сортуємо по кількості спільних знайомих
+  # Сортировка по количеству общих знакомых
   sorted_second_circle = second_circle.sort{|a, b| b[1]<=>a[1]} # <-- Hash sorting by value
 
   sorted_second_circle = sorted_second_circle[0...40]
