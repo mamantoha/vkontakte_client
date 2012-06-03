@@ -26,8 +26,7 @@ module Vkontakte
     def initialize(app_id, api_secret)
       @app_id     = app_id
       @api_secret = api_secret
-      @authorize     = false
-      @api           = nil
+      @authorize  = false
 
       # http://vkontakte.ru/developers.php?o=-1&p=%C0%E2%F2%EE%F0%E8%E7%E0%F6%E8%FF
       @client = OAuth2::Client.new(
@@ -38,6 +37,8 @@ module Vkontakte
         :authorize_url => '/oauth/authorize'
       )
 
+      access_token = OAuth2::AccessToken.new(@client, 'token')
+      @api = Vkontakte::API.new(access_token)
     end
 
     # Вход на сайт ВКонтакте
@@ -79,11 +80,11 @@ module Vkontakte
 
       code = /code=(?<code>.*)/.match(grant_access_page.uri.query)['code']
 
-      @access_token = @client.auth_code.get_token(code)
-      @access_token.options[:param_name] = 'access_token'
-      @access_token.options[:mode] = :query
+      access_token = @client.auth_code.get_token(code)
+      access_token.options[:param_name] = 'access_token'
+      access_token.options[:mode] = :query
 
-      @api = Vkontakte::API.new(@access_token)
+      @api = Vkontakte::API.new(access_token)
       @authorize = true
     end
 
