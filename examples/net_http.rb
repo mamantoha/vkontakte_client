@@ -1,10 +1,9 @@
 # encoding: utf-8
 
-require 'pp'
 require 'net/http'
 
 email = 'anton.linux@gmail.com'
-pass  = ''
+pass  = ARGV[0] || ''
 
 client_id     = '1915108'
 scope         = 'friends,audio'
@@ -19,11 +18,7 @@ uri = URI(url)
 
 request = Net::HTTP::Get.new(uri.request_uri)
 
-response = Net::HTTP.start(uri.host, uri.port,
-  :use_ssl => uri.scheme == 'https') {|http|
-  http.request(request)
-}
-# response.code => '200'
+response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
 
 # Парсим ответ
 params = {
@@ -35,10 +30,11 @@ params = {
 }
 
 puts "Отправка формы"
-url = 'https://login.vk.com/?act=login&soft=1&utf8=1'
+url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
+puts url
 uri = URI(url)
 
-params.merge!({ email: email, pass: pass})
+params.merge!(email: email, pass: pass)
 
 request = Net::HTTP::Post.new(uri.request_uri)
 request.set_form_data(params)
@@ -48,12 +44,14 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
+puts response.code
 if response.code == '302'
   url = response.header['Location']
 end
 
 puts "Разрешение доступа"
 uri = URI(url)
+puts url
 
 raise "Неверный логин или пароль" if /m=4/.match(uri.query)
 
@@ -64,6 +62,8 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
+# если пользователь этого еще не делал(response.code == '200'), надо дать приложению права
+puts response.code
 if response.code == '302'
   url = response.header['Location']
 end
@@ -73,6 +73,7 @@ remixsid = /remixsid=(.+?);/.match(cookie)[1]
 
 puts "Получение code"
 uri = URI(url)
+puts url
 
 header = { "Cookie" => 'remixsid=' + remixsid }
 
@@ -83,11 +84,13 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
+puts response.code
 if response.code == '302'
   url = response.header['Location']
   code = /code=(.+)$/.match(url)[1]
 elsif response.code == '200'
   url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
+  puts url
   uri = URI(url)
 
   header = { "Cookie" => 'remixsid=' + remixsid }
@@ -100,6 +103,7 @@ elsif response.code == '200'
     http.request(request)
   }
 
+  puts response.code
   if response.code == '302'
     url = response.header['Location']
     code = /code=(.+)$/.match(url)[1]
