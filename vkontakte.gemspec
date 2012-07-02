@@ -3,7 +3,6 @@ $:.push File.expand_path("../lib", __FILE__)
 require 'vkontakte/version'
 
 Gem::Specification.new do |gem|
-  gem.add_dependency 'mechanize', '~> 2.0'
   gem.add_dependency 'oauth2', '~> 0.5'
 
   gem.authors       = ["Anton Maminov"]
