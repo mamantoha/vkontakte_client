@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# encoding: utf-8
 
 require 'net/http'
 
@@ -64,11 +64,11 @@ module Vkontakte
 
       # Парсим ответ
       params = {
-        :q             => /name="q" value="(.+?)"/.match(response.body)[1],
-        :from_host     => /name="from_host" value="(.+?)"/.match(response.body)[1],
-        :from_protocol => /name="from_protocol" value="(.+?)"/.match(response.body)[1],
-        :ip_h          => /name="ip_h" value="(.+?)"/.match(response.body)[1],
-        :to            => /name="to" value="(.+?)"/.match(response.body)[1]
+        :q             => response.body[/name="q" value="(.+?)"/, 1],
+        :from_host     => response.body[/name="from_host" value="(.+?)"/, 1],
+        :from_protocol => response.body[/name="from_protocol" value="(.+?)"/, 1],
+        :ip_h          => response.body[/name="ip_h" value="(.+?)"/, 1],
+        :to            => response.body[/name="to" value="(.+?)"/, 1]
       }
 
       # Отправка формы
@@ -85,11 +85,8 @@ module Vkontakte
         http.request(request)
       }
 
-      if response.code == '302'
-        url = response.header['Location']
-      end
-
-      # Разрещение доступа
+      # Получение куки
+      url = response['location'] if response.code == '302'
       uri = URI(url)
 
       raise "Неверный логин или пароль" if /m=4/.match(uri.query)
@@ -101,16 +98,14 @@ module Vkontakte
         http.request(request)
       }
 
-      if response.code == '302'
-        url = response.header['Location']
-      end
-
       cookie = response['set-cookie']
-      remixsid = /remixsid=(.+?);/.match(cookie)[1]
+      remixsid = cookie[/remixsid=(.+?);/, 1]
 
-      # Получение code
-      uri = URI(url)
+      # Установка куки
       header = { "Cookie" => 'remixsid=' + remixsid }
+
+      url = response['location'] if response.code == '302'
+      uri = URI(url)
 
       request = Net::HTTP::Get.new(uri.request_uri, header)
 
@@ -119,15 +114,14 @@ module Vkontakte
         http.request(request)
       }
 
+      # Получения кода
       if response.code == '302'
-        url = response.header['Location']
-        code = /code=(.+)$/.match(url)[1]
+        url = response['location']
+        code = url[/code=(.+)$/, 1]
       elsif response.code == '200'
-        url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
+        url = response.body[/<form method="POST" action="(.+?)"/, 1]
         uri = URI(url)
 
-        header = { "Cookie" => 'remixsid=' + remixsid }
-        
         # Разрешаем доступ и отправляем форму
         request = Net::HTTP::Post.new(uri.request_uri, header)
 
@@ -137,8 +131,8 @@ module Vkontakte
         }
 
         if response.code == '302'
-          url = response.header['Location']
-          code = /code=(.+)$/.match(url)[1]
+          url = response['location']
+          code = url[/code=(.+)$/, 1]
         end
       end
 
