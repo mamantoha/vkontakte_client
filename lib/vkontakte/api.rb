@@ -1,8 +1,11 @@
 module Vkontakte
   class API
+    attr_reader :user_id
+
     def initialize(access_token)
       # if access_token.instance_of? OAuth2::AccessToken
       @access_token = access_token
+      @user_id = @access_token.params['user_id']
     end
 
     # http://vkontakte.ru/developers.php?o=-1&p=%C2%FB%EF%EE%EB%ED%E5%ED%E8%E5%20%E7%E0%EF%F0%EE%F1%EE%E2%20%EA%20API

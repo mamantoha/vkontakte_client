@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# encoding: utf-8
 
 require 'bundler'
 Bundler.setup :default
@@ -22,7 +22,9 @@ if __FILE__ == $0
   vk.login!(email, pass)
 
   # http://vkontakte.ru/developers.php?o=-1&p=friends.get
+  iam     = vk.api.users_get(uid: vk.api.user_id, fields: 'online,last_seen').first
   friends = vk.api.friends_get(fields: 'online,last_seen')
+  friends << iam
 
   # sort an array of hashes by a value in the hash
   sorted_friends = friends.sort_by { |k| k['last_seen'] ? k['last_seen']['time'] : 0 }
