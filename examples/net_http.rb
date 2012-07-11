@@ -6,7 +6,7 @@ email = 'anton.linux@gmail.com'
 pass  = ARGV[0] || ''
 
 client_id     = '1915108'
-scope         = 'friends,audio'
+scope         = 'friends'
 redirect_uri  = 'http://oauth.vk.com/blank.html'
 display       = 'wap'
 response_type = 'code'
@@ -14,6 +14,7 @@ response_type = 'code'
 puts "Открытие диалога авторизации"
 # http://vk.com/developers.php?id=-1_37230422&s=1
 url = "http://oauth.vk.com/oauth/authorize?client_id=#{client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}&_hash=0"
+puts url
 uri = URI(url)
 
 request = Net::HTTP::Get.new(uri.request_uri)
@@ -22,11 +23,11 @@ response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
 
 # Парсим ответ
 params = {
-  :q             => /name="q" value="(.+?)"/.match(response.body)[1],
-  :from_host     => /name="from_host" value="(.+?)"/.match(response.body)[1],
-  :from_protocol => /name="from_protocol" value="(.+?)"/.match(response.body)[1],
-  :ip_h          => /name="ip_h" value="(.+?)"/.match(response.body)[1],
-  :to            => /name="to" value="(.+?)"/.match(response.body)[1]
+  q: response.body[/name="q" value="(.+?)"/, 1],
+  from_host: response.body[/name="from_host" value="(.+?)"/, 1],
+  from_protocol: response.body[/name="from_protocol" value="(.+?)"/, 1],
+  ip_h: response.body[/name="ip_h" value="(.+?)"/, 1],
+  to: response.body[/name="to" value="(.+?)"/, 1]
 }
 
 puts "Отправка формы"
@@ -46,10 +47,10 @@ response = Net::HTTP.start(uri.host, uri.port,
 
 puts response.code
 if response.code == '302'
-  url = response.header['Location']
+  url = response['location']
 end
 
-puts "Разрешение доступа"
+puts "Разрешение доступа и получения куки"
 uri = URI(url)
 puts url
 
@@ -62,20 +63,18 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
+remixsid = /remixsid=(.+?);/.match(response['set-cookie'])[1]
+header = { "Cookie" => 'remixsid=' + remixsid }
+
 # если пользователь этого еще не делал(response.code == '200'), надо дать приложению права
 puts response.code
 if response.code == '302'
-  url = response.header['Location']
+  url = response['location']
 end
 
-cookie = response['set-cookie']
-remixsid = /remixsid=(.+?);/.match(cookie)[1]
-
-puts "Получение code"
+puts "Установка куки"
 uri = URI(url)
 puts url
-
-header = { "Cookie" => 'remixsid=' + remixsid }
 
 request = Net::HTTP::Get.new(uri.request_uri, header)
 
@@ -84,17 +83,16 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
+puts "Получения кода"
 puts response.code
 if response.code == '302'
-  url = response.header['Location']
+  url = response['location']
   code = /code=(.+)$/.match(url)[1]
 elsif response.code == '200'
   url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
   puts url
   uri = URI(url)
 
-  header = { "Cookie" => 'remixsid=' + remixsid }
-  
   # Разрешаем доступ и отправляем форму
   request = Net::HTTP::Post.new(uri.request_uri, header)
 
@@ -105,9 +103,10 @@ elsif response.code == '200'
 
   puts response.code
   if response.code == '302'
-    url = response.header['Location']
+    url = response['location']
     code = /code=(.+)$/.match(url)[1]
   end
 end
 
+puts url
 puts 'code=' + code

@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# encoding: utf-8
 
 require 'bundler'
 Bundler.setup :default
@@ -31,18 +31,22 @@ system "stty echo"
 
 vk.login!(email, pass, 'messages')
 
-# Отримання даних, необхідних для підключення до Long Poll сервера
-# за допомогою методу messages.getLongPollServer:
-# * key - секретний ключ сесії
-# * server - адреса сервера до якого потрібно відправляти запит
-# * ts - номер останньої події, починаючи з якої ви хочете отримати дані
+# Следующие данные , необходимые для подключения к Long Poll серверу
+# с помощью метода messages.getLongPollServer:
+# * key - секретный ключ сесси
+# * server - адреса сервера к которому нужно отправлять запрос
+# * ts - номер последнего события, начиная с которого Ви хотите получать данные
+# * mode - параметр, определяющий наличие поля прикреплений в получаемых данных. Значения: 2 - получать прикрепления, 0 - не получать.
+#
+# Для подключения Вам нужно составить запрос следующего вида:
+# http://{$server}?act=a_check&key={$key}&ts={$ts}&wait=25&mode=2
 #
 resp = vk.api.messages_getLongPollServer
+puts resp
 key, server, ts = resp['key'], resp['server'], resp['ts']
 
 while true do
-  # Підключення до Long Poll сервера
-  url = "http://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25"
+  url = "http://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=2"
   uri = URI.parse(url)
   http = Net::HTTP.new(uri.host, uri.port)
 
@@ -60,11 +64,12 @@ while true do
     puts '[ERROR] JSON Parse Error'
   end
 
-  # Час дії ключа для підключення до LongPoll сервера може вичерпатись
-  # через деякий час, сервер поверне параметр failed:
+  # Время действия ключа для подключения к LongPoll серверу может истечь
+  # через некоторое время, сервер вернёт параметр failed:
   # {failed: 2}
-  # в такому випадку потрібно перепитати його
-  # використовуючи метод messages.getLongPollServer
+  #
+  # в таком случае требуется перезапросить его,
+  # используя метод messages.getLongPollServer
   #
   if params['failed'] == 2
     puts "[INFO] Re-initilize Long Pool Server"
@@ -110,6 +115,6 @@ while true do
       end
     end
   end
-  # Збереження нового значення ts, яке буде передаватися при наступному запиті
+  # Сохранение нового значения ts
   ts = params['ts']
 end
