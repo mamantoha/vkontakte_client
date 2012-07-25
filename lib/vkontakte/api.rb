@@ -1,14 +1,15 @@
+# encoding: utf-8
+
+require 'json'
+
 module Vkontakte
   class API
-    attr_reader :user_id
 
-    def initialize(access_token)
-      # if access_token.instance_of? OAuth2::AccessToken
+    def initialize(access_token = nil)
       @access_token = access_token
-      @user_id = @access_token.params['user_id']
     end
 
-    # http://vkontakte.ru/developers.php?o=-1&p=%C2%FB%EF%EE%EB%ED%E5%ED%E8%E5%20%E7%E0%EF%F0%EE%F1%EE%E2%20%EA%20API
+    # http://vk.com/pages?oid=-1&p=%D0%92%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%BE%D0%B2_%D0%BA_API
     #
     # Перехват неизвестных методов для делегирования серверу ВКонтакте.
     #
@@ -24,7 +25,7 @@ module Vkontakte
     #
     def method_missing(method, *params)
       vk_method = method.to_s.split('_').join('.')
-      response = execute(vk_method, *params).parsed
+      response = execute(vk_method, *params)
       if response['error']
         error_code = response['error']['error_code']
         error_msg  = response['error']['error_msg']
@@ -37,9 +38,20 @@ module Vkontakte
     private
 
     def execute(method, params = {})
-      method = "/method/#{method}"
-      @access_token.get(method, :params => params, :parce => :json)
-    end
+      params.merge!(access_token: @access_token)
+      
+      url = "https://api.vk.com/method/#{method}"
+      uri = URI(url)
+      uri.query = URI.encode_www_form(params)
 
+      request = Net::HTTP::Get.new(uri.request_uri)
+
+      response = Net::HTTP.start(uri.host, uri.port,
+        :use_ssl => uri.scheme == 'https') {|http|
+        http.request(request)
+      }
+
+      return JSON.parse(response.body)
+    end
   end
 end

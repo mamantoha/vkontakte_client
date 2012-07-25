@@ -8,36 +8,28 @@ module Vkontakte
   #
   # == Пример
   #   require 'vkontakte'
-  #   vk = Vkontakte::Client.new(APP_ID, API_SECRET)
+  #   vk = Vkontakte::Client.new(APP_ID)
   #   vk.login!(email, pass)
   #   friends = vk.api.friends_get(:fields => 'online')
   #
   class Client
     attr_reader :api
+    attr_reader :access_token, :user_id
 
     # Конструктор. Получает следующие аргументы:
-    # * app_id: ID приложения ВКонтакте
-    # * api_secret: Ключ приложения со страницы настроек
+    # * client_id: ID приложения ВКонтакте
     #
     # Для доступа к API ВКонтакте предусмотрен механизм клиентской авторизации на базе протокола OAuth 2.0.
     # В качестве клиента может выступать любое приложение, имеющее доступ к управлению Web-браузером.
     #
-    def initialize(client_id, api_secret)
+    # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
+    # необходимости раскпытия секретного ключа приложения.
+    #
+    def initialize(client_id = nil)
       @client_id  = client_id
-      @api_secret = api_secret
       @authorize  = false
 
-      # http://vkontakte.ru/developers.php?o=-1&p=%C0%E2%F2%EE%F0%E8%E7%E0%F6%E8%FF
-      @oauth2_client = OAuth2::Client.new(
-        @client_id,
-        @api_secret,
-        :site          => 'https://api.vk.com/',
-        :token_url     => '/oauth/token',
-        :authorize_url => '/oauth/authorize'
-      )
-
-      access_token = OAuth2::AccessToken.new(@oauth2_client, 'token')
-      @api = Vkontakte::API.new(access_token)
+      @api = Vkontakte::API.new
     end
 
     # Вход на сайт ВКонтакте
@@ -48,7 +40,7 @@ module Vkontakte
     def login!(email, pass, scope = 'friends')
       redirect_uri  = 'http://oauth.vk.com/blank.html'
       display       = 'wap'
-      response_type = 'code'
+      response_type = 'token'
 
       # Открытие диалога авторизации
       # http://vk.com/developers.php?id=-1_37230422&s=1
@@ -114,10 +106,10 @@ module Vkontakte
         http.request(request)
       }
 
-      # Получения кода
+      # Получение access_token
       if response.code == '302'
         url = response['location']
-        code = url[/code=(.+)$/, 1]
+        self.get_token(url)
       elsif response.code == '200'
         url = response.body[/<form method="POST" action="(.+?)"/, 1]
         uri = URI(url)
@@ -132,16 +124,19 @@ module Vkontakte
 
         if response.code == '302'
           url = response['location']
-          code = url[/code=(.+)$/, 1]
+          self.get_token(url)
         end
       end
+    end
 
-      access_token = @oauth2_client.auth_code.get_token(code)
-      access_token.options[:param_name] = 'access_token'
-      access_token.options[:mode] = :query
+    def get_token(url)
+      @access_token = url[/access_token=(.+?)&/, 1]
+      @user_id      = url[/user_id=(.+?)$/, 1]
 
-      @api = Vkontakte::API.new(access_token)
+      @api = Vkontakte::API.new(@access_token)
       @authorize = true
+
+      return @access_token
     end
 
     def authorized?

@@ -8,18 +8,12 @@ require 'vkontakte'
 puts Vkontakte::VERSION
 
 if __FILE__ == $0
-  CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
-  CLIENT_ID     = '1915108'
+  CLIENT_ID = '1915108'
 
-  email = 'anton.linux@gmail.com'
-  # Hide password
-  print 'Password: '
-  system "stty -echo"
-  pass = $stdin.gets.chomp
-  system "stty echo"
-  #pass = ''
+  email = ARGV[0]
+  pass  = ARGV[1]
 
-  vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
+  vk = Vkontakte::Client.new(CLIENT_ID)
   vk.login!(email, pass)
 
   current_user = vk.api.getUserInfo['user_id'].to_i

@@ -1,0 +1,14 @@
+PATH
+  remote: ../
+  specs:
+    vkontakte (1.1.2)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  vkontakte!

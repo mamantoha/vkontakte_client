@@ -8,21 +8,16 @@ require 'vkontakte'
 puts Vkontakte::VERSION
 
 if __FILE__ == $0
-  CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
-  CLIENT_ID     = '1915108'
+  CLIENT_ID = '1915108'
 
-  puts email = 'anton.linux@gmail.com'
-  # Hide password
-  print 'Password: '
-  system "stty -echo"
-  pass = $stdin.gets.chomp
-  system "stty echo"
+  email = ARGV[0]
+  pass  = ARGV[1]
 
-  vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
+  vk = Vkontakte::Client.new(CLIENT_ID)
   vk.login!(email, pass)
 
   # http://vkontakte.ru/developers.php?o=-1&p=friends.get
-  iam     = vk.api.users_get(uid: vk.api.user_id, fields: 'online,last_seen').first
+  iam     = vk.api.users_get(uid: vk.user_id, fields: 'online,last_seen').first
   friends = vk.api.friends_get(fields: 'online,last_seen')
   friends << iam
 

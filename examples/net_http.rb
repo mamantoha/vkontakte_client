@@ -2,14 +2,14 @@
 
 require 'net/http'
 
-email = 'anton.linux@gmail.com'
-pass  = ARGV[0] || ''
+email = ARGV[0]
+pass  = ARGV[1]
 
 client_id     = '1915108'
 scope         = 'friends'
 redirect_uri  = 'http://oauth.vk.com/blank.html'
 display       = 'wap'
-response_type = 'code'
+response_type = 'token'
 
 puts "Открытие диалога авторизации"
 # http://vk.com/developers.php?id=-1_37230422&s=1
@@ -23,11 +23,11 @@ response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
 
 # Парсим ответ
 params = {
-  q: response.body[/name="q" value="(.+?)"/, 1],
-  from_host: response.body[/name="from_host" value="(.+?)"/, 1],
+  q:             response.body[/name="q" value="(.+?)"/, 1],
+  from_host:     response.body[/name="from_host" value="(.+?)"/, 1],
   from_protocol: response.body[/name="from_protocol" value="(.+?)"/, 1],
-  ip_h: response.body[/name="ip_h" value="(.+?)"/, 1],
-  to: response.body[/name="to" value="(.+?)"/, 1]
+  ip_h:          response.body[/name="ip_h" value="(.+?)"/, 1],
+  to:            response.body[/name="to" value="(.+?)"/, 1]
 }
 
 puts "Отправка формы"
@@ -83,11 +83,11 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
-puts "Получения кода"
+puts "Получения access_token"
 puts response.code
 if response.code == '302'
   url = response['location']
-  code = /code=(.+)$/.match(url)[1]
+  access_token = /access_token=(.+?)&/.match(url)[1]
 elsif response.code == '200'
   url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
   puts url
@@ -104,9 +104,9 @@ elsif response.code == '200'
   puts response.code
   if response.code == '302'
     url = response['location']
-    code = /code=(.+)$/.match(url)[1]
+    access_token = /access_token=(.+?)&/.match(url)[1]
   end
 end
 
 puts url
-puts 'code=' + code
+puts 'access_token=' + access_token

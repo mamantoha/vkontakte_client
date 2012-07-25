@@ -10,13 +10,12 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-CLIENT_SECRET = 'BsCEIfRxoDFZU8vZJ65v'
-CLIENT_ID     = '1915108'
+CLIENT_ID = '1915108'
 
 offline = "\033[31;3mофлайн\033[0m"
 online = "\033[32;3mонлайн\033[0m"
 
-vk = Vkontakte::Client.new(CLIENT_ID, CLIENT_SECRET)
+vk = Vkontakte::Client.new(CLIENT_ID)
 
 #print 'Email: '
 #email = gets.chomp
