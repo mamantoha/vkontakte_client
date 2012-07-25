@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require 'net/http'
-
 module Vkontakte
   # = Описание
   # Библиотека Vkontakte позволяет обращяться в API ВКонтакте
@@ -109,7 +107,7 @@ module Vkontakte
       # Получение access_token
       if response.code == '302'
         url = response['location']
-        self.get_token(url)
+        get_token(url)
       elsif response.code == '200'
         url = response.body[/<form method="POST" action="(.+?)"/, 1]
         uri = URI(url)
@@ -124,10 +122,17 @@ module Vkontakte
 
         if response.code == '302'
           url = response['location']
-          self.get_token(url)
+          get_token(url)
         end
       end
+
     end
+
+    def authorized?
+      @authorize ? true : false
+    end
+
+    private
 
     def get_token(url)
       @access_token = url[/access_token=(.+?)&/, 1]
@@ -137,10 +142,6 @@ module Vkontakte
       @authorize = true
 
       return @access_token
-    end
-
-    def authorized?
-      @authorize ? true : false
     end
 
   end

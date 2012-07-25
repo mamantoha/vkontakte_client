@@ -1,4 +1,7 @@
-# -*- encoding: utf-8 -*-
+# encoding: utf-8
+
+require 'json'
+require 'net/http'
 
 require_relative 'vkontakte/version'
 
