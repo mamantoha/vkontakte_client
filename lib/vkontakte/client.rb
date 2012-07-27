@@ -12,7 +12,7 @@ module Vkontakte
   #
   class Client
     attr_reader :api
-    attr_reader :access_token, :user_id
+    attr_reader :access_token, :user_id, :expires_in
 
     # Конструктор. Получает следующие аргументы:
     # * client_id: ID приложения ВКонтакте
@@ -135,9 +135,13 @@ module Vkontakte
     private
 
     def get_token(url)
-      @access_token = url[/access_token=(.+?)&/, 1]
-      @user_id      = url[/user_id=(.+?)$/, 1]
-
+      uri = URI(url)
+      params = Hash[URI.decode_www_form(uri.fragment)]
+      
+      @access_token = params['access_token']
+      @user_id      = params['user_id']
+      @expires_in   = params['expires_in']
+      
       @api = Vkontakte::API.new(@access_token)
       @authorize = true
 
