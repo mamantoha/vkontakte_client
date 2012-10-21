@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'net/http'
+require 'pp'
 
 email = ARGV[0]
 pass  = ARGV[1]
@@ -21,7 +22,7 @@ request = Net::HTTP::Get.new(uri.request_uri)
 
 response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
 
-# Парсим ответ
+puts "Парсим ответ"
 params = {
   q:             response.body[/name="q" value="(.+?)"/, 1],
   from_host:     response.body[/name="from_host" value="(.+?)"/, 1],
@@ -87,6 +88,7 @@ puts "Получения access_token"
 puts response.code
 if response.code == '302'
   url = response['location']
+  puts url
   access_token = /access_token=(.+?)&/.match(url)[1]
 elsif response.code == '200'
   url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
