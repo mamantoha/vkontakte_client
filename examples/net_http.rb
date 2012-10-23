@@ -12,6 +12,8 @@ redirect_uri  = 'http://oauth.vk.com/blank.html'
 display       = 'wap'
 response_type = 'token'
 
+cookie = {}
+
 puts "Открытие диалога авторизации"
 # http://vk.com/developers.php?id=-1_37230422&s=1
 url = "http://oauth.vk.com/oauth/authorize?client_id=#{client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}&_hash=0"
@@ -24,9 +26,9 @@ response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
 
 puts "Парсим ответ"
 params = {
-  _origin:       response.body[/name="_origin" value="(.+?)"/, 1],
-  ip_h:          response.body[/name="ip_h" value="(.+?)"/, 1],
-  to:            response.body[/name="to" value="(.+?)"/, 1]
+  _origin: response.body[/name="_origin" value="(.+?)"/, 1],
+  ip_h:    response.body[/name="ip_h" value="(.+?)"/, 1],
+  to:      response.body[/name="to" value="(.+?)"/, 1]
 }
 
 puts "Отправка формы"
@@ -46,8 +48,8 @@ response = Net::HTTP.start(uri.host, uri.port,
 
 puts response['set-cookie']
 
-l = /l=(.+?);/.match(response['set-cookie'])[1]
-p = /p=(.+?);/.match(response['set-cookie'])[1]
+cookie['l'] = /l=(.+?);/.match(response['set-cookie'])[1] rescue raise("Неверный логин или пароль")
+cookie['p'] = /p=(.+?);/.match(response['set-cookie'])[1]
 
 puts response.code
 if response.code == '302'
@@ -58,8 +60,6 @@ puts "Разрешение доступа и получения куки"
 uri = URI(url)
 puts url
 
-raise "Неверный логин или пароль" if /m=4/.match(uri.query)
-
 request = Net::HTTP::Get.new(uri.request_uri)
 
 response = Net::HTTP.start(uri.host, uri.port,
@@ -67,8 +67,8 @@ response = Net::HTTP.start(uri.host, uri.port,
   http.request(request)
 }
 
-remixsid = /remixsid=(.+?);/.match(response['set-cookie'])[1]
-header = { "Cookie" => "remixsid=#{remixsid};l=#{l};p=#{p}" }
+cookie['remixsid'] = /remixsid=(.+?);/.match(response['set-cookie'])[1]
+header = { "Cookie" => cookie.inject(''){ |memo, c| memo << "#{c[0]}=#{c[1]};" } }
 
 # если пользователь этого еще не делал(response.code == '200'), надо дать приложению права
 puts response.code
