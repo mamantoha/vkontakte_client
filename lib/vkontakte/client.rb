@@ -110,7 +110,7 @@ module Vkontakte
         url = response['location']
         get_token(url)
       elsif response.code == '200'
-        url = response.body[/<form method="POST" action="(.+?)"/, 1]
+        url = response.body[/<form method="post" action="(.+?)"/i, 1]
         uri = URI(url)
 
         # Разрешаем доступ и отправляем форму
