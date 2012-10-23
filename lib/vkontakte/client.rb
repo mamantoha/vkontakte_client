@@ -54,11 +54,9 @@ module Vkontakte
 
       # Парсим ответ
       params = {
-        :q             => response.body[/name="q" value="(.+?)"/, 1],
-        :from_host     => response.body[/name="from_host" value="(.+?)"/, 1],
-        :from_protocol => response.body[/name="from_protocol" value="(.+?)"/, 1],
-        :ip_h          => response.body[/name="ip_h" value="(.+?)"/, 1],
-        :to            => response.body[/name="to" value="(.+?)"/, 1]
+        _origin: response.body[/name="_origin" value="(.+?)"/, 1],
+        ip_h:    response.body[/name="ip_h" value="(.+?)"/, 1],
+        to:      response.body[/name="to" value="(.+?)"/, 1]
       }
 
       # Отправка формы
@@ -74,6 +72,9 @@ module Vkontakte
         :use_ssl => uri.scheme == 'https') {|http|
         http.request(request)
       }
+
+      l = /l=(.+?);/.match(response['set-cookie'])[1]
+      p = /p=(.+?);/.match(response['set-cookie'])[1]
 
       # Получение куки
       url = response['location'] if response.code == '302'
@@ -92,7 +93,7 @@ module Vkontakte
       remixsid = cookie[/remixsid=(.+?);/, 1]
 
       # Установка куки
-      header = { "Cookie" => 'remixsid=' + remixsid }
+      header = { "Cookie" => "remixsid=#{remixsid};l=#{l};p=#{p}" }
 
       url = response['location'] if response.code == '302'
       uri = URI(url)
