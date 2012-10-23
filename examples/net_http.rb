@@ -24,15 +24,13 @@ response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
 
 puts "Парсим ответ"
 params = {
-  q:             response.body[/name="q" value="(.+?)"/, 1],
-  from_host:     response.body[/name="from_host" value="(.+?)"/, 1],
-  from_protocol: response.body[/name="from_protocol" value="(.+?)"/, 1],
+  _origin:       response.body[/name="_origin" value="(.+?)"/, 1],
   ip_h:          response.body[/name="ip_h" value="(.+?)"/, 1],
   to:            response.body[/name="to" value="(.+?)"/, 1]
 }
 
 puts "Отправка формы"
-url = /<form method="POST" action="(.+?)"/.match(response.body)[1]
+url = /<form method="post" action="(.+?)"/.match(response.body)[1]
 puts url
 uri = URI(url)
 
@@ -45,6 +43,11 @@ response = Net::HTTP.start(uri.host, uri.port,
   :use_ssl => uri.scheme == 'https') {|http|
   http.request(request)
 }
+
+puts response['set-cookie']
+
+l = /l=(.+?);/.match(response['set-cookie'])[1]
+p = /p=(.+?);/.match(response['set-cookie'])[1]
 
 puts response.code
 if response.code == '302'
@@ -65,7 +68,7 @@ response = Net::HTTP.start(uri.host, uri.port,
 }
 
 remixsid = /remixsid=(.+?);/.match(response['set-cookie'])[1]
-header = { "Cookie" => 'remixsid=' + remixsid }
+header = { "Cookie" => "remixsid=#{remixsid};l=#{l};p=#{p}" }
 
 # если пользователь этого еще не делал(response.code == '200'), надо дать приложению права
 puts response.code
