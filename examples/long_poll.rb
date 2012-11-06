@@ -17,16 +17,9 @@ online = "\033[32;3mонлайн\033[0m"
 
 vk = Vkontakte::Client.new(CLIENT_ID)
 
-#print 'Email: '
-#email = gets.chomp
-email = 'anton.linux@gmail.com'
-
-# Hide password
-print 'Password: '
-system "stty -echo"
-pass = $stdin.gets.chomp
-system "stty echo"
-#pass = ''
+credentials = Vkontakte::AskForCredentials.new
+email = credentials.email
+pass  = credentials.password
 
 vk.login!(email, pass, 'messages')
 

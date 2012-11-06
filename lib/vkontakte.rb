@@ -9,4 +9,5 @@ module Vkontakte
   autoload :Client, 'vkontakte/client'
   autoload :API, 'vkontakte/api'
   autoload :VkException, 'vkontakte/vkexception'
+  autoload :AskForCredentials, 'vkontakte/ask_for_credentials'
 end
