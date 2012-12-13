@@ -138,7 +138,7 @@ module Vkontakte
     def get_token(url)
       uri = URI(url)
       params = Hash[URI.decode_www_form(uri.fragment)]
-      
+
       @access_token = params['access_token']
       @user_id      = params['user_id']
       @expires_in   = params['expires_in']
