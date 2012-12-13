@@ -73,14 +73,14 @@ module Vkontakte
         http.request(request)
       }
 
-      l = /l=(.+?);/.match(response['set-cookie'])[1]
-      p = /p=(.+?);/.match(response['set-cookie'])[1]
-
       # Получение куки
       url = response['location'] if response.code == '302'
       uri = URI(url)
 
       raise "Неверный логин или пароль" if /m=4/.match(uri.query)
+
+      l = /l=(.+?);/.match(response['set-cookie'])[1]
+      p = /p=(.+?);/.match(response['set-cookie'])[1]
 
       request = Net::HTTP::Get.new(uri.request_uri)
 
