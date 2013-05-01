@@ -42,7 +42,7 @@ module Vkontakte
 
       # Открытие диалога авторизации
       # http://vk.com/developers.php?id=-1_37230422&s=1
-      url = "http://oauth.vk.com/oauth/authorize?client_id=#{@client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}&_hash=0"
+      url = "https://oauth.vk.com/oauth/authorize?client_id=#{@client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}"
       uri = URI(url)
 
       request = Net::HTTP::Get.new(uri.request_uri)
@@ -142,7 +142,7 @@ module Vkontakte
       @access_token = params['access_token']
       @user_id      = params['user_id']
       @expires_in   = params['expires_in']
-      
+
       @api = Vkontakte::API.new(@access_token)
       @authorize = true
 

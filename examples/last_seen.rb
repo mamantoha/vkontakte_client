@@ -17,7 +17,7 @@ if __FILE__ == $0
   vk.login!(email, pass)
 
   # http://vkontakte.ru/developers.php?o=-1&p=friends.get
-  iam     = vk.api.users_get(uid: vk.user_id, fields: 'online,last_seen').first
+  iam     = vk.api.users_get(uids: vk.user_id, fields: 'online,last_seen').first
   friends = vk.api.friends_get(fields: 'online,last_seen')
   friends << iam
 

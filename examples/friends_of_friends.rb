@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# encoding: utf-8
 
 require 'bundler'
 Bundler.setup :default
@@ -30,7 +30,7 @@ if __FILE__ == $0
       print "Parsing your friends: #{index + 1} of #{my_friends.size}. Good: #{good_friends}. Bad: #{bad_friends}\r"
       friends = vk.api.friends_get(:uid => uid)
       good_friends += 1
-    rescue Vkontakte::VkException => err
+    rescue Vkontakte::ApiError => err
       # Permission to perform this action is denied by user
       bad_friends += 1
       next
