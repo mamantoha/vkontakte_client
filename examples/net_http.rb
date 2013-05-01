@@ -16,13 +16,13 @@ cookie = {}
 
 puts "Открытие диалога авторизации"
 # http://vk.com/developers.php?id=-1_37230422&s=1
-url = "http://oauth.vk.com/oauth/authorize?client_id=#{client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}&_hash=0"
+url = "https://oauth.vk.com/oauth/authorize?client_id=#{client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}"
 puts url
 uri = URI(url)
 
 request = Net::HTTP::Get.new(uri.request_uri)
 
-response = Net::HTTP.start(uri.host, uri.port){ |http| http.request(request) }
+response = Net::HTTP.start(uri.host, uri.port, use_ssl: true){ |http| http.request(request) }
 
 puts "Парсим ответ"
 params = {
