@@ -1,5 +1,3 @@
 source :rubygems
 
-gem 'mechanize'
-gem 'lastfm'
 gem 'vkontakte', :path => '../'
