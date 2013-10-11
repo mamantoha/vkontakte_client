@@ -70,8 +70,8 @@ while true do
     begin
       resp = vk.api.messages_getLongPollServer
       key, server, ts = resp['key'], resp['server'], resp['ts']
-    rescue Vkontakte::ApiError => err
-      if err.code == 5
+    rescue Vkontakte::API::Error => err
+      if err.error_code == 5
         puts "[ERROR] User authorization failed: access_token have heen expired"
         puts "[INFO] Getting a new access_token"
         vk.login!(email, pass, permissions: 'messages')
@@ -87,8 +87,8 @@ while true do
       uid = e[1].abs
       begin
         user = vk.api.users_get(:user_ids => uid, :fields => 'sex').first
-      rescue Vkontakte::ApiError => err
-        if err.code == 5
+      rescue Vkontakte::API::Error => err
+        if err.error_code == 5
           puts "[ERROR] #{err.message}"
           puts "[INFO] Getting a new access_token"
           vk.login!(email, pass, permissions: 'messages')

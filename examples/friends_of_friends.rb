@@ -31,7 +31,7 @@ if __FILE__ == $0
       print "Parsing your friends: #{index + 1} of #{my_friends.size}. Good: #{good_friends}. Bad: #{bad_friends}\r"
       friends = vk.api.friends_get(:user_id => uid)['items']
       good_friends += 1
-    rescue Vkontakte::ApiError => err
+    rescue Vkontakte::API::Error => err
       # Permission to perform this action is denied by user
       bad_friends += 1
       next
