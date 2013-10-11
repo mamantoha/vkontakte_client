@@ -6,7 +6,7 @@ module Vkontakte
     def initialize(access_token = nil, api_version: '', lang: 'ru')
       @access_token = access_token
       @api_version = api_version
-      @lang = :lang
+      @lang = lang
     end
 
     # http://vk.com/dev/api_requests
