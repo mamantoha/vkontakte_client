@@ -5,6 +5,7 @@ Bundler.setup :default
 
 require 'vkontakte'
 
+require 'pp'
 require 'date'
 require 'net/http'
 require 'uri'
@@ -39,7 +40,6 @@ key, server, ts = resp['key'], resp['server'], resp['ts']
 
 while true do
   url = "http://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=2"
-  puts url
   uri = URI.parse(url)
   http = Net::HTTP.new(uri.host, uri.port)
 
@@ -74,7 +74,7 @@ while true do
       if err.code == 5
         puts "[ERROR] User authorization failed: access_token have heen expired"
         puts "[INFO] Getting a new access_token"
-        vk.login!(email, pass, 'messages')
+        vk.login!(email, pass, permissions: 'messages')
         retry
       end
     end
@@ -85,14 +85,13 @@ while true do
   if params['updates']
     params['updates'].each do |e|
       uid = e[1].abs
-      # `method_missing': Error in `getProfiles': 5: User authorization failed: access_token have heen expired.
       begin
-        user = vk.api.users_get(:user_ids => uid, :fields => 'sex').first['items']
+        user = vk.api.users_get(:user_ids => uid, :fields => 'sex').first
       rescue Vkontakte::ApiError => err
         if err.code == 5
           puts "[ERROR] #{err.message}"
           puts "[INFO] Getting a new access_token"
-          vk.login!(email, pass, 'messages')
+          vk.login!(email, pass, permissions: 'messages')
           retry
         end
       end
