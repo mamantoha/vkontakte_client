@@ -21,15 +21,15 @@ module Vkontakte
     # для вызова метода API ВКонтакте `friends.get`, вам необходиме передать `method='friends_get'`
     #
     # Возвращаемое значение: хэш с результатами вызова.
-    # Генерируемые исключения: `Vkontakte::ApiError` если сервер ВКонтакте вернул ошибку.
+    # Генерируемые исключения: `Vkontakte::API::Error` если сервер ВКонтакте вернул ошибку.
     #
     def method_missing(method, *params)
-      vk_method = method.to_s.split('_').join('.')
-      response = execute(vk_method, *params)
+      method_name = method.to_s.split('_').join('.')
+      response = execute(method_name, *params)
       if response['error']
         error_code = response['error']['error_code']
         error_msg  = response['error']['error_msg']
-        raise Vkontakte::ApiError.new(vk_method, error_code, error_msg), "Error in `#{vk_method}': #{error_code}: #{error_msg}"
+        raise Vkontakte::API::Error.new(method_name, error_code, error_msg, params)
       end
 
       return response['response']
@@ -37,10 +37,10 @@ module Vkontakte
 
     private
 
-    def execute(method, params = {})
-      params.merge!(access_token: @access_token, lang: @lang, v: @api_version, https: 1)
+    def execute(method_name, params = {})
+      params.merge!({ access_token: @access_token, lang: @lang, v: @api_version, https: '1' })
 
-      url = "https://api.vk.com/method/#{method}"
+      url = "https://api.vk.com/method/#{method_name}"
       uri = URI(url)
       uri.query = URI.encode_www_form(params)
 
