@@ -1,7 +1,7 @@
-# encoding: utf-8
-
 module Vkontakte
   class API
+    attr_reader :access_token, :api_version
+    attr_accessor :lang
 
     def initialize(access_token = nil, api_version: '', lang: 'ru')
       @access_token = access_token

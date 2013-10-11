@@ -19,6 +19,7 @@ if __FILE__ == $0
   puts "access_token: #{vk.access_token}"
   puts "api_version: #{vk.api_version}"
 
+  vk.api.lang = 'en'
   friends = vk.api.friends_get(fields: 'online')
 
   # Использование токена

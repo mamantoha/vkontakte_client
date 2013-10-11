@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Vkontakte
   class AskForCredentials
     attr_reader :email, :password

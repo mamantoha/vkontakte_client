@@ -5,8 +5,8 @@ module Vkontakte
   # == Пример
   #   require 'vkontakte'
   #   vk = Vkontakte::Client.new(APP_ID)
-  #   vk.login!(email, pass)
-  #   friends = vk.api.friends_get(:fields => 'online')
+  #   vk.login!(email, pass, permission: 'friends')
+  #   friends = vk.api.friends_get(fields: 'online')
   #
   class Client
     attr_reader :api
@@ -32,26 +32,31 @@ module Vkontakte
     # Вход на сайт ВКонтакте
     # * email: логин пользователя
     # * pass: пароль
-    # * permissions: запрашиваемые права доступа приложения(http://vkontakte.ru/developers.php?o=-1&p=%CF%F0%E0%E2%E0%20%E4%EE%F1%F2%F3%EF%E0%20%EF%F0%E8%EB%EE%E6%E5%ED%E8%E9)
+    # * permissions: запрашиваемые права доступа приложения(http://vk.com/dev/permissions)
     #
     def login!(email, pass, permissions: 'friends')
       redirect_uri  = 'https://oauth.vk.com/blank.html'
       display       = 'mobile'
       response_type = 'token'
 
+      query = {
+        client_id:     @client_id,
+        scope:         permissions,
+        redirect_uri:  redirect_uri,
+        display:       display,
+        v:             api_version,
+        response_type: response_type,
+      }
+
       # Открытие диалога авторизации OAuth
       # http://vk.com/dev/auth_mobile
       #
       url = "https://oauth.vk.com/oauth/authorize?"
-      query = "client_id=#{@client_id}&scope=#{permissions}&redirect_uri=#{redirect_uri}&display=#{display}&v=#{api_version}&response_type=#{response_type}"
-      uri = URI(url + query)
+      uri = URI(url)
+      uri.query = URI.encode_www_form(query)
 
       request = Net::HTTP::Get.new(uri.request_uri)
-
-      response = Net::HTTP.start(uri.host, uri.port,
-        :use_ssl => uri.scheme == 'https') {|http|
-        http.request(request)
-      }
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true){ |http| http.request(request) }
 
       # Парсим ответ
       params = {
@@ -69,10 +74,7 @@ module Vkontakte
       request = Net::HTTP::Post.new(uri.request_uri)
       request.set_form_data(params)
 
-      response = Net::HTTP.start(uri.host, uri.port,
-        :use_ssl => uri.scheme == 'https') {|http|
-        http.request(request)
-      }
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true){ |http| http.request(request) }
 
       # Получение куки
       url = response['location'] if response.code == '302'
