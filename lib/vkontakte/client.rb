@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Vkontakte
   # = Описание
   # Библиотека Vkontakte позволяет обращяться в API ВКонтакте
@@ -12,7 +10,7 @@ module Vkontakte
   #
   class Client
     attr_reader :api
-    attr_reader :access_token, :user_id, :expires_in
+    attr_reader :access_token, :user_id, :expires_in, :api_version
 
     # Конструктор. Получает следующие аргументы:
     # * client_id: ID приложения ВКонтакте
@@ -23,8 +21,9 @@ module Vkontakte
     # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
     # необходимости раскпытия секретного ключа приложения.
     #
-    def initialize(client_id = nil)
+    def initialize(client_id = nil, api_version: '5.2')
       @client_id  = client_id
+      @api_version = api_version
       @authorize  = false
 
       @api = Vkontakte::API.new
@@ -33,17 +32,19 @@ module Vkontakte
     # Вход на сайт ВКонтакте
     # * email: логин пользователя
     # * pass: пароль
-    # * scope: запрашиваемые права доступа приложения(http://vkontakte.ru/developers.php?o=-1&p=%CF%F0%E0%E2%E0%20%E4%EE%F1%F2%F3%EF%E0%20%EF%F0%E8%EB%EE%E6%E5%ED%E8%E9)
+    # * permissions: запрашиваемые права доступа приложения(http://vkontakte.ru/developers.php?o=-1&p=%CF%F0%E0%E2%E0%20%E4%EE%F1%F2%F3%EF%E0%20%EF%F0%E8%EB%EE%E6%E5%ED%E8%E9)
     #
-    def login!(email, pass, scope = 'friends')
-      redirect_uri  = 'http://oauth.vk.com/blank.html'
-      display       = 'wap'
+    def login!(email, pass, permissions: 'friends')
+      redirect_uri  = 'https://oauth.vk.com/blank.html'
+      display       = 'mobile'
       response_type = 'token'
 
-      # Открытие диалога авторизации
-      # http://vk.com/developers.php?id=-1_37230422&s=1
-      url = "https://oauth.vk.com/oauth/authorize?client_id=#{@client_id}&scope=#{scope}&redirect_uri=#{redirect_uri}&display=#{display}&response_type=#{response_type}"
-      uri = URI(url)
+      # Открытие диалога авторизации OAuth
+      # http://vk.com/dev/auth_mobile
+      #
+      url = "https://oauth.vk.com/oauth/authorize?"
+      query = "client_id=#{@client_id}&scope=#{permissions}&redirect_uri=#{redirect_uri}&display=#{display}&v=#{api_version}&response_type=#{response_type}"
+      uri = URI(url + query)
 
       request = Net::HTTP::Get.new(uri.request_uri)
 
@@ -143,7 +144,7 @@ module Vkontakte
       @user_id      = params['user_id']
       @expires_in   = params['expires_in']
 
-      @api = Vkontakte::API.new(@access_token)
+      @api = Vkontakte::API.new(@access_token, api_version: @api_version)
       @authorize = true
 
       return @access_token

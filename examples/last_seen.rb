@@ -17,8 +17,8 @@ if __FILE__ == $0
   vk.login!(email, pass)
 
   # http://vkontakte.ru/developers.php?o=-1&p=friends.get
-  iam     = vk.api.users_get(uids: vk.user_id, fields: 'online,last_seen').first
-  friends = vk.api.friends_get(fields: 'online,last_seen')
+  iam     = vk.api.users_get(user_ids: vk.user_id, fields: 'online,last_seen').first
+  friends = vk.api.friends_get(fields: 'online,last_seen')['items']
   friends << iam
 
   # sort an array of hashes by a value in the hash
@@ -26,7 +26,7 @@ if __FILE__ == $0
 
   sorted_friends.each do |f|
     last_seen = f['last_seen'] ? Time.at(f['last_seen']['time']) : 'Temporarily suspended'
-    puts "#{last_seen}: [#{f['uid']}] #{f['first_name']} #{f['last_name']}"
+    puts "#{last_seen}: [#{f['id']}] #{f['first_name']} #{f['last_name']}"
   end
 
 end

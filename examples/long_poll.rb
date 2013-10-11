@@ -21,7 +21,7 @@ credentials = Vkontakte::AskForCredentials.new
 email = credentials.email
 pass  = credentials.password
 
-vk.login!(email, pass, 'messages')
+vk.login!(email, pass, permissions: 'messages')
 
 # Следующие данные , необходимые для подключения к Long Poll серверу
 # с помощью метода messages.getLongPollServer:
@@ -39,6 +39,7 @@ key, server, ts = resp['key'], resp['server'], resp['ts']
 
 while true do
   url = "http://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=2"
+  puts url
   uri = URI.parse(url)
   http = Net::HTTP.new(uri.host, uri.port)
 
@@ -86,7 +87,7 @@ while true do
       uid = e[1].abs
       # `method_missing': Error in `getProfiles': 5: User authorization failed: access_token have heen expired.
       begin
-        user = vk.api.getProfiles(:uids => uid, :fields => 'sex').first
+        user = vk.api.users_get(:user_ids => uid, :fields => 'sex').first['items']
       rescue Vkontakte::ApiError => err
         if err.code == 5
           puts "[ERROR] #{err.message}"

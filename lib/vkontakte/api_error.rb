@@ -1,5 +1,5 @@
 module Vkontakte
-  class VkException < Exception
+  class ApiError < Exception
     attr_reader :vk_method, :error_code, :error_msg
 
     def initialize(vk_method, error_code, error_msg)

@@ -3,18 +3,19 @@
 module Vkontakte
   class API
 
-    def initialize(access_token = nil, lang = 'ru')
+    def initialize(access_token = nil, api_version: '', lang: 'ru')
       @access_token = access_token
-      @lang = lang
+      @api_version = api_version
+      @lang = :lang
     end
 
-    # http://vk.com/pages?oid=-1&p=%D0%92%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%BE%D0%B2_%D0%BA_API
+    # http://vk.com/dev/api_requests
     #
     # Перехват неизвестных методов для делегирования серверу ВКонтакте.
     #
     # Выполняет вызов метода API ВКонтакте.
-    # * `method`: имя метода ВКонтакте.
-    # * `params`: хэш с именованными аргументами метода ВКонтакте.
+    # * `method`: название метода из списка функций API
+    # * `params`: параметры соответствующего метода API
     #
     # Следует заметить, что название вызываемих методов оформлены в стиле Ruby.
     # для вызова метода API ВКонтакте `friends.get`, вам необходиме передать `method='friends_get'`
@@ -37,7 +38,7 @@ module Vkontakte
     private
 
     def execute(method, params = {})
-      params.merge!(access_token: @access_token, lang: @lang)
+      params.merge!(access_token: @access_token, lang: @lang, v: @api_version, https: 1)
 
       url = "https://api.vk.com/method/#{method}"
       uri = URI(url)
