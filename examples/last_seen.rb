@@ -1,14 +1,13 @@
-# encoding: utf-8
-
 require 'bundler'
 Bundler.setup :default
 
+require 'byebug'
 require 'vkontakte'
 
 puts Vkontakte::VERSION
 
 if __FILE__ == $0
-  CLIENT_ID = '1915108'
+  CLIENT_ID = '5135875'
 
   email = ARGV[0]
   pass  = ARGV[1]

@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 require 'vkontakte/version'
 
@@ -15,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "vkontakte"
   gem.require_paths = ["lib"]
   gem.version       = Vkontakte::VERSION
+  gem.add_dependency('mechanize')
+  gem.add_development_dependency('byebug')
 end

@@ -21,7 +21,7 @@ module Vkontakte
     # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
     # необходимости раскпытия секретного ключа приложения.
     #
-    def initialize(client_id = nil, api_version: '5.2')
+    def initialize(client_id = nil, api_version: '5.45')
       @client_id  = client_id
       @api_version = api_version
       @authorize  = false
@@ -48,88 +48,34 @@ module Vkontakte
         response_type: response_type,
       }
 
+      agent = Mechanize.new do |a|
+        a.user_agent_alias = 'Linux Firefox'
+        a.follow_meta_refresh
+      end
+
       # Открытие диалога авторизации OAuth
       # http://vk.com/dev/auth_mobile
       #
-      url = "https://oauth.vk.com/oauth/authorize?"
-      uri = URI(url)
-      uri.query = URI.encode_www_form(query)
+      query_string = query.map{ |k,v| "#{k}=#{v}" }.join('&')
+      url = "https://oauth.vk.com/oauth/authorize?#{query_string}"
 
-      request = Net::HTTP::Get.new(uri.request_uri)
-      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true){ |http| http.request(request) }
+      page = agent.get(url)
 
-      # Парсим ответ
-      params = {
-        _origin: response.body[/name="_origin" value="(.+?)"/, 1],
-        ip_h:    response.body[/name="ip_h" value="(.+?)"/, 1],
-        to:      response.body[/name="to" value="(.+?)"/, 1]
-      }
+      login_form = page.forms.first
+      login_form.email = email
+      login_form.pass = pass
+      page = login_form.submit
 
-      # Отправка формы
-      url = 'https://login.vk.com/?act=login&soft=1&utf8=1'
-      uri = URI(url)
-
-      params.merge!({ email: email, pass: pass})
-
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.set_form_data(params)
-
-      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true){ |http| http.request(request) }
-
-      # Получение куки
-      url = response['location'] if response.code == '302'
-      uri = URI(url)
-
-      raise "Неверный логин или пароль" if /m=4/.match(uri.query)
-
-      l = /l=(.+?);/.match(response['set-cookie'])[1]
-      p = /p=(.+?);/.match(response['set-cookie'])[1]
-
-      request = Net::HTTP::Get.new(uri.request_uri)
-
-      response = Net::HTTP.start(uri.host, uri.port,
-        :use_ssl => uri.scheme == 'https') {|http|
-        http.request(request)
-      }
-
-      cookie = response['set-cookie']
-      remixsid = cookie[/remixsid=(.+?);/, 1]
-
-      # Установка куки
-      header = { "Cookie" => "remixsid=#{remixsid};l=#{l};p=#{p}" }
-
-      url = response['location'] if response.code == '302'
-      uri = URI(url)
-
-      request = Net::HTTP::Get.new(uri.request_uri, header)
-
-      response = Net::HTTP.start(uri.host, uri.port,
-        :use_ssl => uri.scheme == 'https') {|http|
-        http.request(request)
-      }
-
-      # Получение access_token
-      if response.code == '302'
-        url = response['location']
-        get_token(url)
-      elsif response.code == '200'
-        url = response.body[/<form method="post" action="(.+?)"/i, 1]
-        uri = URI(url)
-
-        # Разрешаем доступ и отправляем форму
-        request = Net::HTTP::Post.new(uri.request_uri, header)
-
-        response = Net::HTTP.start(uri.host, uri.port,
-          :use_ssl => uri.scheme == 'https') {|http|
-          http.request(request)
-        }
-
-        if response.code == '302'
-          url = response['location']
-          get_token(url)
-        end
+      unless page.search('.service_msg_warning').empty?
+        raise('Invalid login or password.')
       end
 
+      if page.uri.path == "/authorize"
+        gain_access_form = page.forms.first
+        page = gain_access_form.submit
+      end
+
+      return get_token(page)
     end
 
     def authorized?
@@ -138,18 +84,21 @@ module Vkontakte
 
     private
 
-    def get_token(url)
-      uri = URI(url)
-      params = Hash[URI.decode_www_form(uri.fragment)]
+    def get_token(page)
+      gragment_regexp = /\Aaccess_token=(?<access_token>.*)&expires_in=(?<expires_in>\d+)&user_id=(?<user_id>\d*)\z/
+      auth_params = page.uri.fragment.match(gragment_regexp)
+      if auth_params
+        @access_token = auth_params[:access_token]
+        @user_id      = auth_params[:user_id]
+        @expires_in   = auth_params[:expires_in]
 
-      @access_token = params['access_token']
-      @user_id      = params['user_id']
-      @expires_in   = params['expires_in']
+        @api = Vkontakte::API.new(@access_token, api_version: @api_version)
+        @authorize = true
 
-      @api = Vkontakte::API.new(@access_token, api_version: @api_version)
-      @authorize = true
-
-      return @access_token
+        return @access_token
+      else
+        return false
+      end
     end
 
   end

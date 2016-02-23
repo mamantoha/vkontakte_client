@@ -1,5 +1,6 @@
 require 'json'
 require 'net/http'
+require 'mechanize'
 
 require 'vkontakte/version'
 require 'vkontakte/client'

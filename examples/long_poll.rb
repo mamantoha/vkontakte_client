@@ -11,17 +11,17 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-CLIENT_ID = '1915108'
+CLIENT_ID = '5314461'
 
 offline = "\033[31;3mофлайн\033[0m"
 online = "\033[32;3mонлайн\033[0m"
 
-vk = Vkontakte::Client.new(CLIENT_ID)
 
 credentials = Vkontakte::AskForCredentials.new
 email = credentials.email
 pass  = credentials.password
 
+vk = Vkontakte::Client.new(CLIENT_ID)
 vk.login!(email, pass, permissions: 'messages')
 
 # Следующие данные , необходимые для подключения к Long Poll серверу
