@@ -5,7 +5,7 @@ module Vkontakte
   # == Пример
   #   require 'vkontakte'
   #   vk = Vkontakte::Client.new(APP_ID)
-  #   vk.login!(email, pass, permission: 'friends')
+  #   vk.login!(email, pass, permissions: 'friends')
   #   friends = vk.api.friends_get(fields: 'online')
   #
   class Client
@@ -21,7 +21,7 @@ module Vkontakte
     # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
     # необходимости раскпытия секретного ключа приложения.
     #
-    def initialize(client_id = nil, api_version: '5.45')
+    def initialize(client_id = nil, api_version: Vkontakte::API_VERSION)
       @client_id  = client_id
       @api_version = api_version
       @authorize  = false
@@ -34,18 +34,18 @@ module Vkontakte
     # * pass: пароль
     # * permissions: запрашиваемые права доступа приложения(http://vk.com/dev/permissions)
     #
-    def login!(email, pass, permissions: 'friends')
+    def login!(email, pass, permissions: '')
       redirect_uri  = 'https://oauth.vk.com/blank.html'
       display       = 'mobile'
       response_type = 'token'
 
       query = {
         client_id:     @client_id,
-        scope:         permissions,
         redirect_uri:  redirect_uri,
         display:       display,
-        v:             api_version,
+        scope:         permissions,
         response_type: response_type,
+        v:             api_version,
       }
 
       agent = Mechanize.new do |a|
@@ -53,11 +53,12 @@ module Vkontakte
         a.follow_meta_refresh
       end
 
+      # https://vk.com/dev/implicit_flow_user
+      #
       # Открытие диалога авторизации OAuth
-      # http://vk.com/dev/auth_mobile
       #
       query_string = query.map{ |k,v| "#{k}=#{v}" }.join('&')
-      url = "https://oauth.vk.com/oauth/authorize?#{query_string}"
+      url = "https://oauth.vk.com/authorize?#{query_string}"
 
       page = agent.get(url)
 

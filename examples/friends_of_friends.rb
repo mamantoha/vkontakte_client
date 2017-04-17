@@ -1,21 +1,20 @@
-# encoding: utf-8
-
 require 'bundler'
 Bundler.setup :default
 
 require 'pp'
+require 'byebug'
 require 'vkontakte'
 
 puts Vkontakte::VERSION
 
 if __FILE__ == $0
-  CLIENT_ID = '1915108'
+  CLIENT_ID = '5987497'
 
   email = ARGV[0]
   pass  = ARGV[1]
 
   vk = Vkontakte::Client.new(CLIENT_ID)
-  vk.login!(email, pass)
+  vk.login!(email, pass, permissions: 'friends')
 
   current_user = vk.api.users_get.first
 

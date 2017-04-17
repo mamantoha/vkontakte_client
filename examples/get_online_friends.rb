@@ -8,7 +8,7 @@ require 'vkontakte'
 puts Vkontakte::VERSION
 
 if __FILE__ == $0
-  CLIENT_ID = '5135875'
+  CLIENT_ID = '5987497'
   # Авторизация по логину и паролю
   email = ARGV[0]
   pass  = ARGV[1]

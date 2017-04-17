@@ -10,8 +10,9 @@ require 'date'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'byebug'
 
-CLIENT_ID = '5314461'
+CLIENT_ID = '5987497'
 
 offline = "\033[31;3mофлайн\033[0m"
 online = "\033[32;3mонлайн\033[0m"
@@ -32,16 +33,17 @@ vk.login!(email, pass, permissions: 'messages')
 # * mode - параметр, определяющий наличие поля прикрепления в получаемых данных. Значения: 2 - получать прикрепления, 0 - не получать.
 #
 # Для подключения Вам нужно составить запрос следующего вида:
-# http://{$server}?act=a_check&key={$key}&ts={$ts}&wait=25&mode=2
+# https://{$server}?act=a_check&key={$key}&ts={$ts}&wait=25&mode=2&version=1
 #
 resp = vk.api.messages_getLongPollServer
 puts resp
 key, server, ts = resp['key'], resp['server'], resp['ts']
 
 while true do
-  url = "http://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=2"
+  url = "https://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=2&version=1"
   uri = URI.parse(url)
   http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
 
   begin
     res = http.request(Net::HTTP::Get.new(uri.request_uri))
