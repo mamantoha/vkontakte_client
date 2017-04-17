@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'bundler'
 Bundler.setup :default
 
@@ -25,22 +23,14 @@ pass  = credentials.password
 vk = Vkontakte::Client.new(CLIENT_ID)
 vk.login!(email, pass, permissions: 'messages')
 
-# Следующие данные , необходимые для подключения к Long Poll серверу
-# с помощью метода messages.getLongPollServer:
-# * key - секретный ключ сессии
-# * server - адреса сервера к которому нужно отправлять запрос
-# * ts - номер последнего события, начиная с которого Вы хотите получать данные
-# * mode - параметр, определяющий наличие поля прикрепления в получаемых данных. Значения: 2 - получать прикрепления, 0 - не получать.
-#
-# Для подключения Вам нужно составить запрос следующего вида:
-# https://{$server}?act=a_check&key={$key}&ts={$ts}&wait=25&mode=2&version=1
-#
+# https://vk.com/dev/using_longpoll
+
 resp = vk.api.messages_getLongPollServer
 puts resp
 key, server, ts = resp['key'], resp['server'], resp['ts']
 
 while true do
-  url = "https://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=2&version=1"
+  url = "https://#{server}?act=a_check&key=#{key}&ts=#{ts}&wait=25&mode=10&version=1"
   uri = URI.parse(url)
   http = Net::HTTP.new(uri.host, uri.port)
   http.use_ssl = true
