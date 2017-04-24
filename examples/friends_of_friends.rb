@@ -54,7 +54,7 @@ if __FILE__ == $0
   # Отбросим людей которым уже послали приглашение в друзья
   sorted_second_circle.reject! { |arry| friends_requests.include?(arry[0]) }
 
-  sorted_second_circle = sorted_second_circle[0...19]
+  sorted_second_circle = sorted_second_circle[0...49]
 
   # sorted_second_circle           # => [['uid1', 1], ['uid2', 2], ['uid3', 3]]
   # sorted_second_circle.transpose # => [["uid1", "uid2", "uid3"], [1, 2, 3]]

@@ -1,7 +1,6 @@
 require 'bundler'
 Bundler.setup :default
 
-require 'byebug'
 require 'vkontakte'
 
 puts Vkontakte::VERSION

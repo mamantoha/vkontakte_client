@@ -2,7 +2,6 @@ require 'bundler'
 Bundler.setup :default
 
 require 'mechanize'
-require 'byebug'
 require 'logger'
 
 email = ARGV[0]

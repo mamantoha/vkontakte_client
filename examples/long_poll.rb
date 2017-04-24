@@ -8,7 +8,6 @@ require 'date'
 require 'net/http'
 require 'uri'
 require 'json'
-require 'byebug'
 
 CLIENT_ID = '5987497'
 
