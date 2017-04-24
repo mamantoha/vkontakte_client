@@ -15,5 +15,4 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Vkontakte::VERSION
   gem.add_dependency('mechanize')
-  gem.add_development_dependency('byebug')
 end
