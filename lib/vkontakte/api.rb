@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 module Vkontakte
+  # Make Vkontakte API requests
+  #
   class API
     attr_reader :access_token, :api_version
     attr_accessor :lang
@@ -32,13 +36,13 @@ module Vkontakte
         raise Vkontakte::API::Error.new(method_name, error_code, error_msg, params)
       end
 
-      return response['response']
+      response['response']
     end
 
     private
 
     def execute(method_name, params = {})
-      params.merge!({ access_token: @access_token, lang: @lang, v: @api_version, https: '1' })
+      params.merge!(access_token: @access_token, lang: @lang, v: @api_version, https: '1')
 
       url = "https://api.vk.com/method/#{method_name}"
       uri = URI(url)
@@ -47,8 +51,7 @@ module Vkontakte
       request = Net::HTTP::Get.new(uri.request_uri)
       response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(request) }
 
-      return JSON.parse(response.body)
+      JSON.parse(response.body)
     end
-
   end
 end

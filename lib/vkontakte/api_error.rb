@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Vkontakte
   class API
     # An exception raised by `Vkontakte::API` when given a response with an error

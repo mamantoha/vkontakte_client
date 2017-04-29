@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler'
 Bundler.setup :default
 
@@ -5,7 +7,7 @@ require 'vkontakte'
 
 puts Vkontakte::VERSION
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   CLIENT_ID = '5987497'
 
   email = ARGV[0]

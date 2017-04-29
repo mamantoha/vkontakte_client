@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Vkontakte
   # = Описание
   # Библиотека Vkontakte позволяет обращяться в API ВКонтакте
@@ -22,9 +24,9 @@ module Vkontakte
     # необходимости раскпытия секретного ключа приложения.
     #
     def initialize(client_id = nil, api_version: Vkontakte::API_VERSION)
-      @client_id  = client_id
+      @client_id = client_id
       @api_version = api_version
-      @authorize  = false
+      @authorize = false
 
       @api = Vkontakte::API.new
     end
@@ -45,7 +47,7 @@ module Vkontakte
         display:       display,
         scope:         permissions,
         response_type: response_type,
-        v:             api_version,
+        v:             api_version
       }
 
       agent = Mechanize.new do |a|
@@ -57,7 +59,7 @@ module Vkontakte
       #
       # Открытие диалога авторизации OAuth
       #
-      query_string = query.map{ |k,v| "#{k}=#{v}" }.join('&')
+      query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
       url = "https://oauth.vk.com/authorize?#{query_string}"
 
       page = agent.get(url)
@@ -71,12 +73,12 @@ module Vkontakte
         raise('Invalid login or password.')
       end
 
-      if page.uri.path == "/authorize"
+      if page.uri.path == '/authorize'
         gain_access_form = page.forms.first
         page = gain_access_form.submit
       end
 
-      return get_token(page)
+      get_token(page)
     end
 
     def authorized?
@@ -88,19 +90,17 @@ module Vkontakte
     def get_token(page)
       gragment_regexp = /\Aaccess_token=(?<access_token>.*)&expires_in=(?<expires_in>\d+)&user_id=(?<user_id>\d*)\z/
       auth_params = page.uri.fragment.match(gragment_regexp)
-      if auth_params
-        @access_token = auth_params[:access_token]
-        @user_id      = auth_params[:user_id]
-        @expires_in   = auth_params[:expires_in]
 
-        @api = Vkontakte::API.new(@access_token, api_version: @api_version)
-        @authorize = true
+      return false unless auth_params
 
-        return @access_token
-      else
-        return false
-      end
+      @access_token = auth_params[:access_token]
+      @user_id      = auth_params[:user_id]
+      @expires_in   = auth_params[:expires_in]
+
+      @api = Vkontakte::API.new(@access_token, api_version: @api_version)
+      @authorize = true
+
+      @access_token
     end
-
   end
 end

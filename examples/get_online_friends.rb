@@ -1,4 +1,5 @@
 # encoding: utf-8
+# frozen_string_literal: true
 
 require 'bundler'
 Bundler.setup :default
@@ -7,7 +8,7 @@ require 'vkontakte'
 
 puts Vkontakte::VERSION
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   CLIENT_ID = '5987497'
   # Авторизация по логину и паролю
   email = ARGV[0]
@@ -22,15 +23,15 @@ if __FILE__ == $0
   friends = vk.api.friends_get(fields: 'online')
 
   # Использование токена
-  #access_token = ARGV[0]
-  #api = Vkontakte::API.new(access_token)
-  #friends = api.friends_get(fields:  'online')
+  # access_token = ARGV[0]
+  # api = Vkontakte::API.new(access_token)
+  # friends = api.friends_get(fields:  'online')
 
-  friends_online = friends['items'].select {|item| item['online'] == 1}
+  friends_online = friends['items'].select { |item| item['online'] == 1 }
 
   puts "Online friends [#{friends_online.size}]:"
   friends_online.each do |f|
-    mobile = (f['online_mobile'] == 1) ? "[mobile]" : ""
+    mobile = f['online_mobile'] == 1 ? '[mobile]' : ''
     puts "[#{f['id']}] #{f['first_name']} #{f['last_name']} #{mobile}"
   end
 end

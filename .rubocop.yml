@@ -1,0 +1,17 @@
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/BlockLength:
+  Max: 57
+
+Metrics/LineLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 30
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/MethodMissing:
+  Enabled: false
