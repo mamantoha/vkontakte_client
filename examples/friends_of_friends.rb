@@ -5,6 +5,7 @@ Bundler.setup :default
 
 require 'pp'
 require 'vkontakte'
+require 'pry'
 
 puts Vkontakte::VERSION
 
@@ -26,9 +27,27 @@ if __FILE__ == $PROGRAM_NAME
   good_friends = 0
   bad_friends = 0
 
-  my_friends.each_with_index do |uid, index|
+  # информацию о отправленных заявках на добавление в друзья
+  fr_count = 1000
+  fr_offset = 0
+  friends_requests = []
+
+  loop do
+    fr = vk.api.friends_getRequests(out: 1, count: fr_count, offset: fr_offset * fr_count)['items']
+    friends_requests << fr
+    break if fr.empty?
+    fr_offset += 1
+  end
+
+  friends_requests.flatten!
+
+  puts "You have #{my_friends.count} friends"
+  parse_friends_count = 100
+  puts "#{friends_requests.count} people already receive request"
+
+  my_friends[0...parse_friends_count].each_with_index do |uid, index|
     begin
-      print "Parsing your friends: #{index + 1} of #{my_friends.size}. Good: #{good_friends}. Bad: #{bad_friends}\r"
+      print "Parsing your friends: #{index + 1} of #{parse_friends_count}. Good: #{good_friends}. Bad: #{bad_friends}\r"
       friends = vk.api.friends_get(user_id: uid)['items']
       good_friends += 1
     rescue Vkontakte::API::Error
@@ -55,12 +74,10 @@ if __FILE__ == $PROGRAM_NAME
   # Отбросим людей которым уже послали приглашение в друзья
   sorted_second_circle.reject! { |arry| friends_requests.include?(arry[0]) }
 
-  sorted_second_circle = sorted_second_circle[0...99]
-
   # sorted_second_circle           # => [['uid1', 1], ['uid2', 2], ['uid3', 3]]
   # sorted_second_circle.transpose # => [["uid1", "uid2", "uid3"], [1, 2, 3]]
 
-  common_friends = vk.api.users_get(user_ids: sorted_second_circle.transpose[0].join(',').to_s)
+  common_friends = vk.api.users_get(user_ids: sorted_second_circle[0...99].transpose[0].join(',').to_s)
 
   sorted_second_circle.each do |uid, count|
     begin
@@ -70,11 +87,18 @@ if __FILE__ == $PROGRAM_NAME
         friend = common_friends.find { |f| f['id'] == uid }
         puts "[#{count}]: [#{friend['id']}] #{friend['first_name']} #{friend['last_name']}"
         vk.api.friends_add(user_id: friend['id'])
+        sleep 1
       end
     rescue Vkontakte::API::Error => err
       puts err.message
-      sleep 60
-      retry
+
+      if err.error_code == 1
+        puts 'Come back tomorrow'
+        break
+      else
+        sleep 60
+        retry
+      end
     end
   end
 

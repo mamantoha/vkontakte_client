@@ -15,9 +15,7 @@ module Vkontakte
 
       # A full description of the error
       def message
-        message = "VKontakte returned an error #{@error_code}: '#{@error_msg}'"
-        message << " after calling method '#{@method_name}'"
-        message << " with parameters #{@params.inspect}"
+        "VKontakte returned an error #{@error_code}: '#{@error_msg}' after calling method '#{@method_name}' with parameters #{@params.inspect}"
       end
     end
   end
