@@ -41,8 +41,8 @@ if __FILE__ == $PROGRAM_NAME
 
   friends_requests.flatten!
 
+  parse_friends_count = 10
   puts "You have #{my_friends.count} friends"
-  parse_friends_count = 100
   puts "#{friends_requests.count} people already receive request"
 
   my_friends[0...parse_friends_count].each_with_index do |uid, index|
@@ -68,9 +68,6 @@ if __FILE__ == $PROGRAM_NAME
   # Сортировка по количеству общих знакомых
   sorted_second_circle = second_circle.sort { |a, b| b[1] <=> a[1] } # <-- Hash sorting by value
 
-  # информацию о отправленных заявках на добавление в друзья
-  friends_requests = vk.api.friends_getRequests(out: 1, count: 1000)['items']
-
   # Отбросим людей которым уже послали приглашение в друзья
   sorted_second_circle.reject! { |arry| friends_requests.include?(arry[0]) }
 
@@ -79,16 +76,31 @@ if __FILE__ == $PROGRAM_NAME
 
   common_friends = vk.api.users_get(user_ids: sorted_second_circle[0...99].transpose[0].join(',').to_s)
 
+  puts "Getting common friends."
+  common_friends = []
+  sorted_second_circle.each_slice(300) do |ids|
+    sleep 1
+    cf =  vk.api.users_get(user_ids: ids.transpose[0].join(',').to_s)
+    break if cf.empty?
+    common_friends << cf
+  end
+
+  common_friends.flatten!
+  puts "Total common friends: #{common_friends.size}"
+
   sorted_second_circle.each do |uid, count|
     begin
+      sleep 1
       user = vk.api.users_get(user_id: uid).first
 
-      unless user['deactivated']
-        friend = common_friends.find { |f| f['id'] == uid }
-        puts "[#{count}]: [#{friend['id']}] #{friend['first_name']} #{friend['last_name']}"
-        vk.api.friends_add(user_id: friend['id'])
-        sleep 1
-      end
+      next if  user['deactivated']
+
+      friend = common_friends.find { |f| f['id'] == uid }
+
+      next unless friend
+
+      puts "[#{count}]: [#{friend['id']}] #{friend['first_name']} #{friend['last_name']}"
+      vk.api.friends_add(user_id: friend['id'])
     rescue Vkontakte::API::Error => err
       puts err.message
 
