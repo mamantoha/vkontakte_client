@@ -16,5 +16,6 @@ Gem::Specification.new do |gem|
   gem.name          = 'vkontakte'
   gem.require_paths = ['lib']
   gem.version       = Vkontakte::VERSION
-  gem.add_dependency('mechanize')
+  gem.add_runtime_dependency('mechanize')
+  gem.add_runtime_dependency('socksify')
 end

@@ -4,13 +4,14 @@ module Vkontakte
   # Make Vkontakte API requests
   #
   class API
-    attr_reader :access_token, :api_version
+    attr_reader :access_token, :proxy, :api_version
     attr_accessor :lang
 
-    def initialize(access_token = nil, api_version: Vkontakte::API_VERSION, lang: 'ru')
+    def initialize(access_token = nil, proxy: nil, api_version: Vkontakte::API_VERSION, lang: 'ru')
       @access_token = access_token
       @api_version = api_version
       @lang = lang
+      @proxy = proxy
     end
 
     # http://vk.com/dev/api_requests
@@ -48,10 +49,27 @@ module Vkontakte
       uri = URI(url)
       uri.query = URI.encode_www_form(params)
 
-      request = Net::HTTP::Get.new(uri.request_uri)
-      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(request) }
+      response = make_request(uri)
 
       JSON.parse(response.body)
+    end
+
+    def make_request(uri)
+      request = Net::HTTP::Get.new(uri.request_uri)
+
+      if @proxy
+        if @proxy.http?
+          Net::HTTP.start(uri.host, uri.port, @proxy.addr, @proxy.port, use_ssl: true) do |http|
+            http.request(request)
+          end
+        elsif @proxy.socks?
+          Net::HTTP.SOCKSProxy(@proxy.addr, @proxy.port).start(uri.host, uri.port, use_ssl: true) do |http|
+            http.request(request)
+          end
+        end
+      else
+        Net::HTTP.start(uri.host, use_ssl: true) { |http| http.request(request) }
+      end
     end
   end
 end
