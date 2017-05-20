@@ -14,13 +14,20 @@ if __FILE__ == $PROGRAM_NAME
   email = ARGV[0]
   pass  = ARGV[1]
 
-  vk = Vkontakte::Client.new(CLIENT_ID)
-  vk.login!(email, pass, permissions: 'friends,wall')
+  proxy = Vkontakte::Proxy.new(:socks, 'localhost', 9050)
 
-  friend_ids = vk.api.friends_get['items']
+  vk = Vkontakte::Client.new(CLIENT_ID)
+  # vk = Vkontakte::Client.new(CLIENT_ID, proxy: proxy)
+
+  vk.login!(email, pass, permissions: 'friends,wall')
+  vk_api = vk.api
+  puts "Access token: #{vk.access_token}"
+
+  friend_ids = vk_api.friends_get['items']
+
   puts 'Запрещает показывать новости от всех друзей'
   friend_ids.each_slice(100) do |user_ids|
-    vk.api.newsfeed_addBan(user_ids: user_ids.join(','))
+    vk_api.newsfeed_addBan(user_ids: user_ids.join(','))
   end
-  puts vk.api.newsfeed_getBanned
+  puts vk_api.newsfeed_getBanned
 end

@@ -76,7 +76,7 @@ if __FILE__ == $PROGRAM_NAME
 
   common_friends = vk.api.users_get(user_ids: sorted_second_circle[0...99].transpose[0].join(',').to_s)
 
-  puts "Getting common friends."
+  puts 'Getting common friends.'
   common_friends = []
   sorted_second_circle.each_slice(300) do |ids|
     sleep 1

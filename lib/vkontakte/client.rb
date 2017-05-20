@@ -23,10 +23,11 @@ module Vkontakte
     # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
     # необходимости раскпытия секретного ключа приложения.
     #
-    def initialize(client_id = nil, api_version: Vkontakte::API_VERSION)
+    def initialize(client_id = nil, api_version: Vkontakte::API_VERSION, proxy: nil)
       @client_id = client_id
       @api_version = api_version
       @authorize = false
+      @proxy = proxy
 
       @api = Vkontakte::API.new
     end
@@ -53,6 +54,9 @@ module Vkontakte
       agent = Mechanize.new do |a|
         a.user_agent_alias = 'Linux Firefox'
         a.follow_meta_refresh
+
+        a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy && @proxy.socks?
+        a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy && @proxy.http?
       end
 
       # https://vk.com/dev/implicit_flow_user
@@ -75,6 +79,7 @@ module Vkontakte
 
       if page.uri.path == '/authorize'
         gain_access_form = page.forms.first
+        raise('Captcha needed.') if gain_access_form.captcha_key
         page = gain_access_form.submit
       end
 
@@ -97,7 +102,7 @@ module Vkontakte
       @user_id      = auth_params[:user_id]
       @expires_in   = auth_params[:expires_in]
 
-      @api = Vkontakte::API.new(@access_token, api_version: @api_version)
+      @api = Vkontakte::API.new(@access_token, proxy: @proxy, api_version: @api_version)
       @authorize = true
 
       @access_token
