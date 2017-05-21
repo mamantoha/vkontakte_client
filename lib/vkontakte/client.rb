@@ -126,9 +126,6 @@ module Vkontakte
       form.pass = @pass
       form.captcha_key = captcha
       allow_page = form.submit
-
-      allow_form = allow_page.forms.first
-      allow_form.submit
     end
 
   end
