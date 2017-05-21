@@ -37,7 +37,10 @@ module Vkontakte
     # * pass: пароль
     # * permissions: запрашиваемые права доступа приложения(http://vk.com/dev/permissions)
     #
-    def login!(email, pass, permissions: '')
+    def login!(email, pass, open_captcha: false, permissions: '')
+      @email = email
+      @pass = pass
+
       redirect_uri  = 'https://oauth.vk.com/blank.html'
       display       = 'mobile'
       response_type = 'token'
@@ -69,8 +72,8 @@ module Vkontakte
       page = agent.get(url)
 
       login_form = page.forms.first
-      login_form.email = email
-      login_form.pass = pass
+      login_form.email = @email
+      login_form.pass = @pass
       page = login_form.submit
 
       unless page.search('.service_msg_warning').empty?
@@ -78,9 +81,7 @@ module Vkontakte
       end
 
       if page.uri.path == '/authorize'
-        gain_access_form = page.forms.first
-        raise('Captcha needed.') if gain_access_form.captcha_key
-        page = gain_access_form.submit
+        page = submit_gain_access_form(page, open_captcha)
       end
 
       get_token(page)
@@ -107,5 +108,26 @@ module Vkontakte
 
       @access_token
     end
+
+    def submit_gain_access_form(page, open_captcha)
+      form = page.forms.first
+
+      if form&.captcha_key
+        raise('Captcha needed.') unless open_captcha
+
+        captcha_img = page.search('img[id=captcha]').first
+
+        puts 'Captcha needed.'
+        puts "Open url: #{captcha_img['src']}"
+        print 'Enter captch: '
+        captcha = STDIN.gets.chomp
+
+        form.pass = @pass
+        form.captcha_key = captcha
+      end
+
+      form.submit
+    end
+
   end
 end

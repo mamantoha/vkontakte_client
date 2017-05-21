@@ -16,10 +16,10 @@ if __FILE__ == $PROGRAM_NAME
 
   proxy = Vkontakte::Proxy.new(:socks, 'localhost', 9050)
 
-  vk = Vkontakte::Client.new(CLIENT_ID)
-  # vk = Vkontakte::Client.new(CLIENT_ID, proxy: proxy)
+  # vk = Vkontakte::Client.new(CLIENT_ID)
+  vk = Vkontakte::Client.new(CLIENT_ID, proxy: proxy)
 
-  vk.login!(email, pass, permissions: 'friends,wall')
+  vk.login!(email, pass, open_captcha: true, permissions: 'friends,wall')
   vk_api = vk.api
   puts "Access token: #{vk.access_token}"
 
