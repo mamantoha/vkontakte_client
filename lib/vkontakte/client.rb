@@ -112,21 +112,23 @@ module Vkontakte
     def submit_gain_access_form(page, open_captcha)
       form = page.forms.first
 
-      if form&.captcha_key
-        raise('Captcha needed.') unless open_captcha
+      return form.submit unless form.captcha_key
 
-        captcha_img = page.search('img[id=captcha]').first
+      raise('Captcha needed.') unless open_captcha
 
-        puts 'Captcha needed.'
-        puts "Open url: #{captcha_img['src']}"
-        print 'Enter captch: '
-        captcha = STDIN.gets.chomp
+      captcha_img = page.search('img[id=captcha]').first
 
-        form.pass = @pass
-        form.captcha_key = captcha
-      end
+      puts 'Captcha needed.'
+      puts "Open url: #{captcha_img['src']}"
+      print 'Enter captch: '
+      captcha = STDIN.gets.chomp
 
-      form.submit
+      form.pass = @pass
+      form.captcha_key = captcha
+      allow_page = form.submit
+
+      allow_form = allow_page.forms.first
+      allow_form.submit
     end
 
   end
