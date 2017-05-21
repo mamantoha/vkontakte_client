@@ -126,6 +126,9 @@ module Vkontakte
       form.pass = @pass
       form.captcha_key = captcha
       allow_page = form.submit
+
+      raise('Invalid captcha.') unless allow_page.uri.path == "/blank.html"
+      allow_page
     end
 
   end
