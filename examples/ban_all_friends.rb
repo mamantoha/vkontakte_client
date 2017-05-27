@@ -14,10 +14,11 @@ if __FILE__ == $PROGRAM_NAME
   email = ARGV[0]
   pass  = ARGV[1]
 
-  proxy = Vkontakte::Proxy.new(:socks, 'localhost', 9050)
 
-  # vk = Vkontakte::Client.new(CLIENT_ID)
-  vk = Vkontakte::Client.new(CLIENT_ID, proxy: proxy)
+  vk = Vkontakte::Client.new(CLIENT_ID)
+
+  # proxy = Vkontakte::Proxy.new(:socks, 'localhost', 9050)
+  # vk = Vkontakte::Client.new(CLIENT_ID, proxy: proxy)
 
   vk.login!(email, pass, open_captcha: true, permissions: 'friends,wall')
   vk_api = vk.api
