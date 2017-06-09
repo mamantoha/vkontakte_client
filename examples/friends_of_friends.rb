@@ -41,7 +41,7 @@ if __FILE__ == $PROGRAM_NAME
 
   friends_requests.flatten!
 
-  parse_friends_count = 10
+  parse_friends_count = 30
   puts "You have #{my_friends.count} friends"
   puts "#{friends_requests.count} people already receive request"
 
@@ -104,13 +104,18 @@ if __FILE__ == $PROGRAM_NAME
     rescue Vkontakte::API::Error => err
       puts err.message
 
-      if err.error_code == 1
+      case err.error_code
+      when 1
         puts 'Come back tomorrow'
         break
+      when 175
+        # Cannot add this user to friends as they have put you on their blacklist
+        next
       else
         sleep 60
         retry
       end
+
     end
   end
 
