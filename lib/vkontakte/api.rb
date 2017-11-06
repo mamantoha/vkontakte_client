@@ -46,29 +46,33 @@ module Vkontakte
       params.merge!(access_token: @access_token, lang: @lang, v: @api_version, https: '1')
 
       url = "https://api.vk.com/method/#{method_name}"
-      uri = URI(url)
-      uri.query = URI.encode_www_form(params)
 
-      response = make_request(uri)
+      response = make_request(url, params)
 
       JSON.parse(response.body)
     end
 
-    def make_request(uri)
-      request = Net::HTTP::Get.new(uri.request_uri)
+    def make_request(url, params)
+      uri = URI(url)
+      use_ssl = uri.scheme == 'https'
+
+      request = Net::HTTP::Post.new(uri)
+      request.form_data = params
 
       if @proxy
         if @proxy.http?
-          Net::HTTP.start(uri.host, uri.port, @proxy.addr, @proxy.port, use_ssl: true) do |http|
+          Net::HTTP.start(uri.hostname, uri.port, @proxy.addr, @proxy.port, use_ssl: use_ssl) do |http|
             http.request(request)
           end
         elsif @proxy.socks?
-          Net::HTTP.SOCKSProxy(@proxy.addr, @proxy.port).start(uri.host, uri.port, use_ssl: true) do |http|
+          Net::HTTP.SOCKSProxy(@proxy.addr, @proxy.port).start(uri.hostname, uri.port, use_ssl: use_ssl) do |http|
             http.request(request)
           end
         end
       else
-        Net::HTTP.start(uri.host, use_ssl: true) { |http| http.request(request) }
+        Net::HTTP.start(uri.hostname, uri.port, use_ssl: use_ssl) do |http|
+          http.request(request)
+        end
       end
     end
   end
