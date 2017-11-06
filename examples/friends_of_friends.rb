@@ -9,7 +9,7 @@ require 'pry'
 
 puts Vkontakte::VERSION
 
-if __FILE__ == $PROGRAM_NAME
+if $PROGRAM_NAME == __FILE__
   CLIENT_ID = '5987497'
 
   email = ARGV[0]
@@ -115,7 +115,6 @@ if __FILE__ == $PROGRAM_NAME
         sleep 60
         retry
       end
-
     end
   end
 

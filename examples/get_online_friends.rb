@@ -1,4 +1,3 @@
-# encoding: utf-8
 # frozen_string_literal: true
 
 require 'bundler'
@@ -8,7 +7,7 @@ require 'vkontakte'
 
 puts Vkontakte::VERSION
 
-if __FILE__ == $PROGRAM_NAME
+if $PROGRAM_NAME == __FILE__
   CLIENT_ID = '5987497'
   # Авторизация по логину и паролю
   email = ARGV[0]

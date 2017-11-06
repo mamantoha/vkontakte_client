@@ -8,12 +8,11 @@ require 'vkontakte'
 
 puts Vkontakte::VERSION
 
-if __FILE__ == $PROGRAM_NAME
+if $PROGRAM_NAME == __FILE__
   CLIENT_ID = '5987497'
 
   email = ARGV[0]
   pass  = ARGV[1]
-
 
   vk = Vkontakte::Client.new(CLIENT_ID)
 
