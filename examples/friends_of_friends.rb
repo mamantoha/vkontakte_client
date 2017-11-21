@@ -10,7 +10,7 @@ require 'pry'
 puts Vkontakte::VERSION
 
 if $PROGRAM_NAME == __FILE__
-  CLIENT_ID = '5987497'
+  CLIENT_ID = '5987497'.freeze
 
   email = ARGV[0]
   pass  = ARGV[1]
