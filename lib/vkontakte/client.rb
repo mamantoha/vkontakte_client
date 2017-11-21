@@ -112,7 +112,7 @@ module Vkontakte
     def submit_gain_access_form(page, open_captcha)
       form = page.forms.first
 
-      return form.submit unless form.captcha_key
+      return form.submit unless form.has_key?("captcha_key")
 
       raise('Captcha needed.') unless open_captcha
 
