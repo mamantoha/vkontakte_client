@@ -29,5 +29,5 @@ if $PROGRAM_NAME == __FILE__
   friend_ids.each_slice(100) do |user_ids|
     vk_api.newsfeed_addBan(user_ids: user_ids.join(','))
   end
-  puts vk_api.newsfeed_getBanned
+  puts "#{vk_api.newsfeed_getBanned['members'].size} of #{friend_ids.size} are banned."
 end
