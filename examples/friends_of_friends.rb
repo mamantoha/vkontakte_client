@@ -108,8 +108,7 @@ if $PROGRAM_NAME == __FILE__
       when 1
         puts 'Come back tomorrow'
         break
-      when 175
-        # Cannot add this user to friends as they have put you on their blacklist
+      when *[175, 176]
         next
       else
         sleep 60
