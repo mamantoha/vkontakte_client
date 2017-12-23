@@ -23,7 +23,18 @@ if $PROGRAM_NAME == __FILE__
   second_circle = {}
   second_circle.default = 0
   # [uid, uid, ...]
-  my_friends = vk.api.friends_get(order: 'hints')['items']
+
+  my_friends = []
+  fr_count = 5000
+  fr_offset = 0
+  loop do
+    fr = vk.api.friends_get(order: 'hints', count: fr_count, offset: fr_offset * fr_count)['items']
+    break if fr.empty?
+    my_friends << fr
+    fr_offset += 1
+  end
+  my_friends.flatten!
+
   good_friends = 0
   bad_friends = 0
 
@@ -34,11 +45,10 @@ if $PROGRAM_NAME == __FILE__
 
   loop do
     fr = vk.api.friends_getRequests(out: 1, count: fr_count, offset: fr_offset * fr_count)['items']
-    friends_requests << fr
     break if fr.empty?
+    friends_requests << fr
     fr_offset += 1
   end
-
   friends_requests.flatten!
 
   parse_friends_count = 30
@@ -60,16 +70,12 @@ if $PROGRAM_NAME == __FILE__
 
   puts "\nComplete"
 
-  # Отбросим друзей и людей, у которых только один общий знакомый
-  second_circle.reject! { |uid, count| my_friends.include?(uid) || current_user['id'] == uid || count < 2 }
+  second_circle.reject! { |uid, count| my_friends.include?(uid) || friends_requests.include?(uid) || current_user['id'] == uid || count < 2 }
 
   puts "Total people in 2nd circle: #{second_circle.size}"
 
   # Сортировка по количеству общих знакомых
   sorted_second_circle = second_circle.sort { |a, b| b[1] <=> a[1] } # <-- Hash sorting by value
-
-  # Отбросим людей которым уже послали приглашение в друзья
-  sorted_second_circle.reject! { |arry| friends_requests.include?(arry[0]) }
 
   # sorted_second_circle           # => [['uid1', 1], ['uid2', 2], ['uid3', 3]]
   # sorted_second_circle.transpose # => [["uid1", "uid2", "uid3"], [1, 2, 3]]
