@@ -23,11 +23,20 @@ if $PROGRAM_NAME == __FILE__
   vk_api = vk.api
   puts "Access token: #{vk.access_token}"
 
-  friend_ids = vk_api.friends_get['items']
+  my_friends = []
+  fr_count = 5000
+  fr_offset = 0
+  loop do
+    fr = vk.api.friends_get(count: fr_count, offset: fr_offset * fr_count)['items']
+    break if fr.empty?
+    my_friends << fr
+    fr_offset += 1
+  end
+  my_friends.flatten!
 
   puts 'Запрещает показывать новости от всех друзей'
-  friend_ids.each_slice(100) do |user_ids|
+  my_friends.each_slice(100) do |user_ids|
     vk_api.newsfeed_addBan(user_ids: user_ids.join(','))
   end
-  puts "#{vk_api.newsfeed_getBanned['members'].size} of #{friend_ids.size} are banned."
+  puts "#{vk_api.newsfeed_getBanned['members'].size} of #{my_friends.size} are banned."
 end
