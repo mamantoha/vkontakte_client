@@ -23,9 +23,12 @@ if $PROGRAM_NAME == __FILE__
   vk_api = vk.api
   puts "Access token: #{vk.access_token}"
 
+  banned_ids = vk_api.newsfeed_getBanned['members']
+
   my_friends = []
   fr_count = 5000
   fr_offset = 0
+  puts "Get friends"
   loop do
     fr = vk.api.friends_get(count: fr_count, offset: fr_offset * fr_count)['items']
     break if fr.empty?
@@ -34,9 +37,34 @@ if $PROGRAM_NAME == __FILE__
   end
   my_friends.flatten!
 
-  puts 'Запрещает показывать новости от всех друзей'
-  my_friends.each_slice(100) do |user_ids|
+  my_requests = []
+  fr_count = 1000
+  fr_offset = 0
+  puts "Received applications to friends"
+  loop do
+    fr = vk.api.friends_getRequests(count: fr_count, offset: fr_offset * fr_count, out: 0)['items']
+    break if fr.empty?
+    my_requests << fr
+    fr_offset += 1
+  end
+
+  fr_count = 1000
+  fr_offset = 0
+  puts "Get requests sent by the me"
+  loop do
+    fr = vk.api.friends_getRequests(count: fr_count, offset: fr_offset * fr_count, out: 1)['items']
+    break if fr.empty?
+    my_requests << fr
+    fr_offset += 1
+  end
+
+  my_requests.flatten!
+
+  all_users = (my_friends | my_requests) - banned_ids
+
+  puts 'Clean news feed from #{all_users} new users'
+  all_users.each_slice(100) do |user_ids|
     vk_api.newsfeed_addBan(user_ids: user_ids.join(','))
   end
-  puts "#{vk_api.newsfeed_getBanned['members'].size} of #{my_friends.size} are banned."
+  puts "#{vk_api.newsfeed_getBanned['members'].size} are banned."
 end
