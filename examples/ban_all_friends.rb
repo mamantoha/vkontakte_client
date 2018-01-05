@@ -62,7 +62,7 @@ if $PROGRAM_NAME == __FILE__
 
   all_users = (my_friends | my_requests) - banned_ids
 
-  puts 'Clean news feed from #{all_users} new users'
+  puts "Clean news feed from #{all_users} new users"
   all_users.each_slice(100) do |user_ids|
     vk_api.newsfeed_addBan(user_ids: user_ids.join(','))
   end
