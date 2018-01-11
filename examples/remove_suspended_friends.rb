@@ -14,7 +14,7 @@ if $PROGRAM_NAME == __FILE__
   pass  = ARGV[1]
 
   vk = Vkontakte::Client.new(CLIENT_ID)
-  vk.login!(email, pass, permissions: 'friends')
+  vk.login!(email, pass, permissions: 'friends', open_captcha: true)
 
   vk.api.account_getInfo
 
