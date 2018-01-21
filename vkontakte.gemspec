@@ -18,4 +18,5 @@ Gem::Specification.new do |gem|
   gem.version       = Vkontakte::VERSION
   gem.add_runtime_dependency('mechanize')
   gem.add_runtime_dependency('socksify')
+  gem.add_development_dependency('pry')
 end
