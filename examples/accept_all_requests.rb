@@ -20,7 +20,7 @@ if $PROGRAM_NAME == __FILE__
   vk_api = vk.api
   puts "Access token: #{vk.access_token}"
 
-  friend_ids = vk_api.friends_getRequests['items']
+  friend_ids = vk_api.friends_getRequests(need_viewed: 1, out: 0)['items']
   puts "You have #{friend_ids.size} friends requests."
 
   friend_ids.each_slice(100) do |user_ids|
