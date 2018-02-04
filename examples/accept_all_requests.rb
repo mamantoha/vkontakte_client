@@ -30,6 +30,9 @@ if $PROGRAM_NAME == __FILE__
         vk_api.friends_add(user_id: user_id)
         puts ' - OK'
       rescue Vkontakte::API::Error => ex
+        if ex.error_code == 177
+          vk_api.account_banUser(user_id: user_id)
+        end
         puts ' - Skip'
       end
     end
