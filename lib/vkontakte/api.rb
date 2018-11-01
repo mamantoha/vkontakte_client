@@ -4,14 +4,21 @@ module Vkontakte
   # Make Vkontakte API requests
   #
   class API
-    attr_reader :access_token, :proxy, :api_version
+    attr_reader :access_token, :proxy, :api_version, :timeout
     attr_accessor :lang
 
-    def initialize(access_token = nil, proxy: nil, api_version: Vkontakte::API_VERSION, lang: 'ru')
+    def initialize(
+      access_token = nil,
+      proxy: nil,
+      api_version: Vkontakte::API_VERSION,
+      lang: 'ru',
+      timeout: 60
+    )
       @access_token = access_token
+      @proxy = proxy
       @api_version = api_version
       @lang = lang
-      @proxy = proxy
+      @timeout = timeout
     end
 
     # http://vk.com/dev/api_requests
@@ -61,7 +68,15 @@ module Vkontakte
 
       if @proxy
         if @proxy.http?
-          Net::HTTP.start(uri.hostname, uri.port, @proxy.addr, @proxy.port, use_ssl: use_ssl) do |http|
+          Net::HTTP.start(
+            uri.hostname,
+            uri.port,
+            @proxy.addr,
+            @proxy.port,
+            use_ssl: use_ssl,
+            read_timeout: timeout,
+            open_timeout: timeout
+          ) do |http|
             http.request(request)
           end
         elsif @proxy.socks?
@@ -70,7 +85,13 @@ module Vkontakte
           end
         end
       else
-        Net::HTTP.start(uri.hostname, uri.port, use_ssl: use_ssl) do |http|
+        Net::HTTP.start(
+          uri.hostname,
+          uri.port,
+          use_ssl: use_ssl,
+          read_timeout: timeout,
+          open_timeout: timeout
+        ) do |http|
           http.request(request)
         end
       end

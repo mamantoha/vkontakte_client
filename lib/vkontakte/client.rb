@@ -23,11 +23,17 @@ module Vkontakte
     # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
     # необходимости раскпытия секретного ключа приложения.
     #
-    def initialize(client_id = nil, api_version: Vkontakte::API_VERSION, proxy: nil)
+    def initialize(
+      client_id = nil,
+      api_version: Vkontakte::API_VERSION,
+      proxy: nil,
+      timeout: 60
+    )
       @client_id = client_id
       @api_version = api_version
-      @authorize = false
       @proxy = proxy
+      @timeout = timeout
+      @authorize = false
 
       @api = Vkontakte::API.new
     end
@@ -103,7 +109,13 @@ module Vkontakte
       @user_id      = auth_params[:user_id]
       @expires_in   = auth_params[:expires_in]
 
-      @api = Vkontakte::API.new(@access_token, proxy: @proxy, api_version: @api_version)
+      @api = Vkontakte::API.new(
+        @access_token,
+        proxy: @proxy,
+        api_version: @api_version,
+        timeout: @timeout
+      )
+
       @authorize = true
 
       @access_token

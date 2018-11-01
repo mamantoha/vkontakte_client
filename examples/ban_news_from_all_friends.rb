@@ -3,7 +3,6 @@
 require 'bundler'
 Bundler.setup :default
 
-require 'pry'
 require 'vkontakte'
 
 puts Vkontakte::VERSION
