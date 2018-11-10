@@ -26,12 +26,14 @@ if $PROGRAM_NAME == __FILE__
   end
   out_requests.flatten!
 
-  puts "You have #{out_requests.size} out requests."
+  out_requests_size = out_requests.size
 
-  out_requests.each do |id|
+  puts "You have #{out_requests_size} out requests."
+
+  out_requests.each_with_index do |id, i|
     resp = vk.api.friends_delete(user_id: id)
     if resp["out_request_deleted"] == 1
-      puts "Succeess delete request to `#{id}`"
+      puts "[#{i + 1}/#{out_requests_size}] Succeess delete request to `#{id}`"
     else
       resp
     end
