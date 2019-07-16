@@ -13,7 +13,7 @@ redirect_uri  = 'https://oauth.vk.com/blank.html'
 display       = 'mobile'
 scope         = 'friends,audio,video'
 response_type = 'token'
-v             = '5.45'
+v             = '5.101'
 
 # https://vk.com/dev/auth_mobile
 puts 'Открытие диалога авторизации'

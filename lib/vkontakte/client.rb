@@ -74,6 +74,7 @@ module Vkontakte
       #
       query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
       url = "https://oauth.vk.com/authorize?#{query_string}"
+      puts url
 
       page = agent.get(url)
 
@@ -120,7 +121,7 @@ module Vkontakte
     def submit_gain_access_form(page, open_captcha)
       form = page.forms.first
 
-      return form.submit unless form.key?('captcha_key')
+      return form.submit unless form.has_key?('captcha_key')
 
       raise('Captcha needed.') unless open_captcha
 

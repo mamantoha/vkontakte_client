@@ -5,6 +5,7 @@ require 'net/http'
 require 'mechanize'
 require 'socksify'
 require 'socksify_mechanize'
+require 'pry'
 
 require 'vkontakte/version'
 require 'vkontakte/client'
@@ -14,5 +15,5 @@ require 'vkontakte/proxy'
 require 'vkontakte/ask_for_credentials'
 
 module Vkontakte
-  API_VERSION = '5.63'
+  API_VERSION = '5.101'
 end
