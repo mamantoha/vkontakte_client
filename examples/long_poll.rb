@@ -83,7 +83,7 @@ loop do
     next
   end
 
-  params['updates']&.each do |e|
+  params['updates']&.each do |param|
     uid = e[1].abs
     begin
       user = vk.api.users_get(user_ids: uid, fields: 'sex').first
@@ -96,11 +96,11 @@ loop do
       end
     end
 
-    puts e if user.nil?
+    puts param if user.nil?
     first_name = user['first_name']
     last_name = user['last_name']
     state = %w[стало стала став][user['sex'].to_i]
-    case e[0]
+    case param[0]
     when 8
       puts "#{Time.now.strftime('%d/%m/%y %H:%M:%S')}: #{first_name} #{last_name} #{state} #{online}"
     when 9

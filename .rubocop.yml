@@ -18,3 +18,9 @@ Style/MethodMissingSuper:
 
 Style/MissingRespondToMissing:
   Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/PreferredHashMethods:
+  Enabled: false
