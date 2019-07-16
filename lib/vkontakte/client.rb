@@ -74,7 +74,6 @@ module Vkontakte
       #
       query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
       url = "https://oauth.vk.com/authorize?#{query_string}"
-      puts url
 
       page = agent.get(url)
 
