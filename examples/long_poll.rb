@@ -39,8 +39,8 @@ loop do
 
   begin
     res = http.request(Net::HTTP::Get.new(uri.request_uri))
-  rescue => err
-    puts "[ERROR] #{err}"
+  rescue StandardError => e
+    puts "[ERROR] #{e}"
     sleep 5
     retry
   end
@@ -66,8 +66,8 @@ loop do
       key = resp['key']
       server = resp['server']
       ts = resp['ts']
-    rescue Vkontakte::API::Error => err
-      if err.error_code == 5
+    rescue Vkontakte::API::Error => e
+      if e.error_code == 5
         puts '[ERROR] User authorization failed: access_token have heen expired'
         puts '[INFO] Getting a new access_token'
         vk.login!(email, pass, permissions: 'messages')
@@ -82,9 +82,9 @@ loop do
     uid = e[1].abs
     begin
       user = vk.api.users_get(user_ids: uid, fields: 'sex').first
-    rescue Vkontakte::API::Error => err
-      if err.error_code == 5
-        puts "[ERROR] #{err.message}"
+    rescue Vkontakte::API::Error => e
+      if e.error_code == 5
+        puts "[ERROR] #{e.message}"
         puts '[INFO] Getting a new access_token'
         vk.login!(email, pass, permissions: 'messages')
         retry
@@ -96,9 +96,9 @@ loop do
     last_name = user['last_name']
     state = %w[стало стала став][user['sex'].to_i]
     case e[0]
-    when 8 then
+    when 8
       puts "#{Time.now.strftime('%d/%m/%y %H:%M:%S')}: #{first_name} #{last_name} #{state} #{online}"
-    when 9 then
+    when 9
       puts "#{Time.now.strftime('%d/%m/%y %H:%M:%S')}: #{first_name} #{last_name} #{state} #{offline}"
     end
   end

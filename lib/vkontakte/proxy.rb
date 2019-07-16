@@ -7,9 +7,7 @@ module Vkontakte
     VALID_PROXY_TYPES = %i[http socks].freeze
 
     def initialize(type, addr, port)
-      unless VALID_PROXY_TYPES.include?(type)
-        raise(StandartError, "#{`type`} is an invalid proxy type. Available values: #{VALID_PROXY_TYPES.join(',')}")
-      end
+      raise(StandartError, "#{`type`} is an invalid proxy type. Available values: #{VALID_PROXY_TYPES.join(',')}") unless VALID_PROXY_TYPES.include?(type)
 
       @type = type
       @addr = addr

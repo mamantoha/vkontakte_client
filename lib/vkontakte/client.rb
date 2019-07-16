@@ -52,20 +52,20 @@ module Vkontakte
       response_type = 'token'
 
       query = {
-        client_id:     @client_id,
-        redirect_uri:  redirect_uri,
-        display:       display,
-        scope:         permissions,
+        client_id: @client_id,
+        redirect_uri: redirect_uri,
+        display: display,
+        scope: permissions,
         response_type: response_type,
-        v:             api_version
+        v: api_version
       }
 
       agent = Mechanize.new do |a|
         a.user_agent_alias = 'Linux Firefox'
         a.follow_meta_refresh
 
-        a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy && @proxy.socks?
-        a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy && @proxy.http?
+        a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy&.socks?
+        a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
       end
 
       # https://vk.com/dev/implicit_flow_user
@@ -82,13 +82,9 @@ module Vkontakte
       login_form.pass = @pass
       page = login_form.submit
 
-      unless page.search('.service_msg_warning').empty?
-        raise('Invalid login or password.')
-      end
+      raise('Invalid login or password.') unless page.search('.service_msg_warning').empty?
 
-      if page.uri.path == '/authorize'
-        page = submit_gain_access_form(page, open_captcha)
-      end
+      page = submit_gain_access_form(page, open_captcha) if page.uri.path == '/authorize'
 
       get_token(page)
     end
@@ -124,7 +120,7 @@ module Vkontakte
     def submit_gain_access_form(page, open_captcha)
       form = page.forms.first
 
-      return form.submit unless form.has_key?("captcha_key")
+      return form.submit unless form.key?('captcha_key')
 
       raise('Captcha needed.') unless open_captcha
 
@@ -140,13 +136,11 @@ module Vkontakte
       allow_page = form.submit
 
       allow_form = allow_page.forms.first
-      if allow_form && allow_form.buttons.detect { |btn| btn.value == 'Allow'}
-        allow_page = allow_form.submit
-      end
+      allow_page = allow_form.submit if allow_form&.buttons&.detect { |btn| btn.value == 'Allow' }
 
-      raise('Invalid captcha.') unless allow_page.uri.path == "/blank.html"
+      raise('Invalid captcha.') unless allow_page.uri.path == '/blank.html'
+
       allow_page
     end
-
   end
 end

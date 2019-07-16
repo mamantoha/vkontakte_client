@@ -50,6 +50,7 @@ module Vkontakte
 
     def with_tty
       return unless $stdin.isatty
+
       yield
     end
   end

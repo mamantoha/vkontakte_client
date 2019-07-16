@@ -27,10 +27,11 @@ if $PROGRAM_NAME == __FILE__
   my_friends = []
   fr_count = 5000
   fr_offset = 0
-  puts "Get friends"
+  puts 'Get friends'
   loop do
     fr = vk.api.friends_get(count: fr_count, offset: fr_offset * fr_count)['items']
     break if fr.empty?
+
     my_friends << fr
     fr_offset += 1
   end
@@ -39,20 +40,22 @@ if $PROGRAM_NAME == __FILE__
   my_requests = []
   fr_count = 1000
   fr_offset = 0
-  puts "Received applications to friends"
+  puts 'Received applications to friends'
   loop do
     fr = vk.api.friends_getRequests(count: fr_count, offset: fr_offset * fr_count, out: 0)['items']
     break if fr.empty?
+
     my_requests << fr
     fr_offset += 1
   end
 
   fr_count = 1000
   fr_offset = 0
-  puts "Get requests sent by the me"
+  puts 'Get requests sent by the me'
   loop do
     fr = vk.api.friends_getRequests(count: fr_count, offset: fr_offset * fr_count, out: 1)['items']
     break if fr.empty?
+
     my_requests << fr
     fr_offset += 1
   end

@@ -15,11 +15,11 @@ if $PROGRAM_NAME == __FILE__
 
   friends_requests_ids = vk_api.friends_getRequests(need_viewed: 1, out: 0)['items']
 
-  current_user = vk_api.users_get(fields: "counters").first
+  current_user = vk_api.users_get(fields: 'counters').first
 
-  puts "User: #{current_user["first_name"]} #{current_user["last_name"]}"
-  puts "Friends: #{current_user["counters"]["friends"]}"
-  puts "Online Friends: #{current_user["counters"]["online_friends"]}"
+  puts "User: #{current_user['first_name']} #{current_user['last_name']}"
+  puts "Friends: #{current_user['counters']['friends']}"
+  puts "Online Friends: #{current_user['counters']['online_friends']}"
   puts "Friends requests: #{friends_requests_ids.size}"
-  puts "Subscriptions: #{current_user["counters"]["subscriptions"]}"
+  puts "Subscriptions: #{current_user['counters']['subscriptions']}"
 end

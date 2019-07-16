@@ -40,9 +40,7 @@ login_form.email = email
 login_form.pass = pass
 page = login_form.submit
 
-unless page.search('.service_msg_warning').empty?
-  raise('Invalid login or password.')
-end
+raise('Invalid login or password.') unless page.search('.service_msg_warning').empty?
 
 if page.uri.path == '/authorize'
   puts 'Разрешение доступа'

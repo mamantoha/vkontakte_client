@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler'
 Bundler.setup :default
 
@@ -21,6 +23,7 @@ if $PROGRAM_NAME == __FILE__
   loop do
     fr = vk.api.friends_getRequests(count: count, offset: offset * count, out: 1)['items']
     break if fr.empty?
+
     out_requests << fr
     offset += 1
   end
@@ -32,7 +35,7 @@ if $PROGRAM_NAME == __FILE__
 
   out_requests.each_with_index do |id, i|
     resp = vk.api.friends_delete(user_id: id)
-    if resp["out_request_deleted"] == 1
+    if resp['out_request_deleted'] == 1
       puts "[#{i + 1}/#{out_requests_size}] Succeess delete request to `#{id}`"
     else
       resp

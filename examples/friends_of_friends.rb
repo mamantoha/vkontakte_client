@@ -30,6 +30,7 @@ if $PROGRAM_NAME == __FILE__
   loop do
     fr = vk.api.friends_get(order: 'hints', count: fr_count, offset: fr_offset * fr_count)['items']
     break if fr.empty?
+
     my_friends << fr
     fr_offset += 1
   end
@@ -46,6 +47,7 @@ if $PROGRAM_NAME == __FILE__
   loop do
     fr = vk.api.friends_getRequests(out: 1, count: fr_count, offset: fr_offset * fr_count)['items']
     break if fr.empty?
+
     friends_requests << fr
     fr_offset += 1
   end
@@ -88,6 +90,7 @@ if $PROGRAM_NAME == __FILE__
     sleep 1
     cf =  vk.api.users_get(user_ids: ids.transpose[0].join(',').to_s)
     break if cf.empty?
+
     common_friends << cf
   end
 
@@ -95,31 +98,29 @@ if $PROGRAM_NAME == __FILE__
   puts "Total common friends: #{common_friends.size}"
 
   sorted_second_circle.each do |uid, count|
-    begin
-      sleep 1
-      user = vk.api.users_get(user_id: uid).first
+    sleep 1
+    user = vk.api.users_get(user_id: uid).first
 
-      next if  user['deactivated']
+    next if  user['deactivated']
 
-      friend = common_friends.find { |f| f['id'] == uid }
+    friend = common_friends.find { |f| f['id'] == uid }
 
-      next unless friend
+    next unless friend
 
-      puts "[#{count}]: [#{friend['id']}] #{friend['first_name']} #{friend['last_name']}"
-      vk.api.friends_add(user_id: friend['id'])
-    rescue Vkontakte::API::Error => err
-      puts err.message
+    puts "[#{count}]: [#{friend['id']}] #{friend['first_name']} #{friend['last_name']}"
+    vk.api.friends_add(user_id: friend['id'])
+  rescue Vkontakte::API::Error => e
+    puts e.message
 
-      case err.error_code
-      when 1
-        puts 'Come back tomorrow'
-        break
-      when *[175, 176]
-        next
-      else
-        sleep 60
-        retry
-      end
+    case e.error_code
+    when 1
+      puts 'Come back tomorrow'
+      break
+    when 175, 176
+      next
+    else
+      sleep 60
+      retry
     end
   end
 
