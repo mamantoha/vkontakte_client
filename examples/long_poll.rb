@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# https://vk.com/dev/messages_api
+#
+# С 15 февраля 2019 года методы секции messages
+# по умолчанию будут доступны для вызова только с ключом доступа сообщества.
+
 require 'bundler'
 Bundler.setup :default
 
