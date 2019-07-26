@@ -1,75 +1,74 @@
 # vkontakte
 
-Библиотека для авторизация клиентских приложений и для доступа к API ВКонтакте
+Ruby library for authorization of client applications and for access to the VK API
 
-## Использование
+## Usage
 
 ``` ruby
 require 'vkontakte'
 ```
 
-## Регистрация приложения
+## Application registration
 
-Вам необходимо зарегистрировать свое приложение, чтобы использовать все возможности API ВКонтакте.
+You must register your application in order to use all the capabilities of API VKontakte.
 
-Откройте страницу «Управление» в левом меню, затем нажмите «Создать приложение» — Вы попадете на страницу https://vk.com/editapp?act=create
+Open the page “Managed apps” in the left menu, then press “Create an app”. You will be directed to the page <https://vk.com/editapp?act=create>.
 
-Нужно выбрать Standalone-приложение.
+You need to choose _Standalone-app_.
 
-После подтверждения действия Вы попадете на страницу с информацией о приложении.
-Откройте вкладку "Настройки" в меню слева. Вы увидите поле "ID приложения", в котором будет указано число, например, 5490057.
-Это число — идентификатор приложения, он же `API_ID`, `APP_ID`, `CLIENT_ID`, оно потребуется Вам в дальнейшей работе.
+After confirming the action, you will be redirected to the page with information about the app. Open the page "Settings" in the left-hand menu and you will see the field "ID applications", in which a number will be located. For example, `5490057`. This number is the application identification, a.k.a. `API_ID`, `APP_ID`, `client_id`, and you will need it for your future work.
 
-### Создание клиента
+### Initialize Vkontakte client
 
-При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без необходимости раскрытия секретного ключа приложения.
-Конструктор получает только один аргумент - идентификатор приложения ВКонтакте - `CLIENT_ID`.
+With client authorization, the access key to the API `access_token`.
+The constructor takes only one argument - the VK application ID - `CLIENT_ID`.
 
 ``` ruby
 vk = Vkontakte::Client.new(CLIENT_ID)
 ```
 
-### Авторизация по логину и паролю
+### Login and password authorization
 
-Для работы с большинством методов API Вам необходимо передавать в запросе `access_token` — специальный ключ доступа.
+In general, for API identification, a special access key is used which is called `access_token`. This token is a string of numbers and Latin letters which you send to the server along with the request.
 
-Эта библиотека поддерживаем [Implicit flow](https://vk.com/dev/implicit_flow_user) способ получения ключа доступа по OAuth 2.0:
+This library supports the [Implicit flow](https://vk.com/dev/implicit_flow_user) way to obtain an OAuth 2.0 access key:
+th 2.0:
 
-Метод `login!` принимает следующие аргументы:
-* `email`: логин пользователя
-* `pass`: пароль
-* `permissions`: запрашиваемые [права доступа приложения](https://vk.com/dev/permissions)
+The `login!` method takes the following arguments:
+
+* `email`: user login
+* `pass`: user password
+* `permissions`: requeste [application permissions](https://vk.com/dev/permissions)
 
 ``` ruby
 vk.login!(email, pass, permissions: 'friends')
 ```
 
-### Вызов методов
+### API Requests
 
-После успешной авторизации Вы можете [осуществлять запросы к API](http://vk.com/dev/api_requests) используя название метода из [списка функций API](http://vk.com/dev/methods).
-Параметры соответствующего метода API передаются как хєш.
-Следует заметить что метод вида `friends.get` нужно передавать как `friends_get`.
+After successful authorization, you can [make requests to the API](http://vk.com/dev/api_requests) using the method name from the [API function list](http://vk.com/dev/methods).
+
+The parameters of the corresponding API method are passed as `Hash`.
+Note that a method like `friends.get` needs to be passed as `friends_get`.
 
 ``` ruby
 vk.api.friends_get(fields: 'online', order: 'name', name_case: 'dat')
 ```
 
-Чтобы избежать появления ошибок, Вы можете предварительно проверять состояние пользователя методом `account.getInfo`.
+To avoid errors, you can pre-check the status of the user using the `account.getInfo` method.
 
 ```ruby
 vk.api.account_getInfo
 ```
 
-### Авторизация по токену
+### Token Authorization
 
-Полезно сохранить полученный токен (и, при необходимости, id пользователя)
+It is useful to save the received `access_token` (and, if necessary, the `user_id`) to reuse them
 
 ``` ruby
 access_token = vk.access_token
 user_id = vk.user_id
 ```
-
-чтобы использовать их повторно
 
 ``` ruby
 api = Vkontakte::API.new(access_token)
