@@ -39,7 +39,6 @@ if $PROGRAM_NAME == __FILE__
   good_friends = 0
   bad_friends = 0
 
-  # информацию о отправленных заявках на добавление в друзья
   fr_count = 1000
   fr_offset = 0
   friends_requests = []
@@ -76,7 +75,6 @@ if $PROGRAM_NAME == __FILE__
 
   puts "Total people in 2nd circle: #{second_circle.size}"
 
-  # Сортировка по количеству общих знакомых
   sorted_second_circle = second_circle.sort { |a, b| b[1] <=> a[1] } # <-- Hash sorting by value
 
   # sorted_second_circle           # => [['uid1', 1], ['uid2', 2], ['uid3', 3]]
