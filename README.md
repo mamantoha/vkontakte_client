@@ -74,3 +74,17 @@ user_id = vk.user_id
 api = Vkontakte::API.new(access_token)
 api.friends_get(fields: 'online', order: 'name', name_case: 'dat')
 ```
+
+## Contributing
+
+1. Fork it (<https://github.com/mamantoha/vkontakte/fork>)
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new Pull Request
+
+## License
+
+Copyright: 2010-2019 Anton Maminov (anton.maminov@gmail.com)
+
+This library is distributed under the MIT license. Please see the LICENSE file.
