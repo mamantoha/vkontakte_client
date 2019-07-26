@@ -21,20 +21,6 @@ module Vkontakte
       @timeout = timeout
     end
 
-    # http://vk.com/dev/api_requests
-    #
-    # Перехват неизвестных методов для делегирования серверу ВКонтакте.
-    #
-    # Выполняет вызов метода API ВКонтакте.
-    # * `method`: название метода из списка функций API
-    # * `params`: параметры соответствующего метода API
-    #
-    # Следует заметить, что название вызываемих методов оформлены в стиле Ruby.
-    # для вызова метода API ВКонтакте `friends.get`, вам необходиме передать `method='friends_get'`
-    #
-    # Возвращаемое значение: хэш с результатами вызова.
-    # Генерируемые исключения: `Vkontakte::API::Error` если сервер ВКонтакте вернул ошибку.
-    #
     def method_missing(method, *params)
       method_name = method.to_s.split('_').join('.')
       response = execute(method_name, *params)

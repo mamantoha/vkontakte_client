@@ -1,28 +1,10 @@
 # frozen_string_literal: true
 
 module Vkontakte
-  # = Описание
-  # Библиотека Vkontakte позволяет обращяться в API ВКонтакте
-  #
-  # == Пример
-  #   require 'vkontakte'
-  #   vk = Vkontakte::Client.new(APP_ID)
-  #   vk.login!(email, pass, permissions: 'friends')
-  #   friends = vk.api.friends_get(fields: 'online')
-  #
   class Client
     attr_reader :api
     attr_reader :access_token, :user_id, :expires_in, :api_version
 
-    # Конструктор. Получает следующие аргументы:
-    # * client_id: ID приложения ВКонтакте
-    #
-    # Для доступа к API ВКонтакте предусмотрен механизм клиентской авторизации на базе протокола OAuth 2.0.
-    # В качестве клиента может выступать любое приложение, имеющее доступ к управлению Web-браузером.
-    #
-    # При клиентской авторизации ключ доступа к API `access_token` выдаётся приложению без
-    # необходимости раскпытия секретного ключа приложения.
-    #
     def initialize(
       client_id = nil,
       api_version: Vkontakte::API_VERSION,
@@ -38,11 +20,6 @@ module Vkontakte
       @api = Vkontakte::API.new
     end
 
-    # Вход на сайт ВКонтакте
-    # * email: логин пользователя
-    # * pass: пароль
-    # * permissions: запрашиваемые права доступа приложения(http://vk.com/dev/permissions)
-    #
     def login!(email, pass, open_captcha: false, permissions: '')
       @email = email
       @pass = pass

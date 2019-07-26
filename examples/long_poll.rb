@@ -2,8 +2,8 @@
 
 # https://vk.com/dev/messages_api
 #
-# С 15 февраля 2019 года методы секции messages
-# по умолчанию будут доступны для вызова только с ключом доступа сообщества.
+# From February 15, 2019 methods of the messages section
+# by default, will be available to call only with the community access key.
 
 require 'bundler'
 Bundler.setup :default
@@ -56,13 +56,6 @@ loop do
     puts '[ERROR] JSON Parse Error'
   end
 
-  # Время действия ключа для подключения к LongPoll серверу может истечь
-  # через некоторое время, сервер вернёт параметр failed:
-  # {failed: 2}
-  #
-  # в таком случае требуется переспросить его,
-  # используя метод messages.getLongPollServer
-  #
   if params['failed'] == 2
     puts '[INFO] Re-initilize Long Pool Server'
 
@@ -107,6 +100,6 @@ loop do
       puts "#{Time.now.strftime('%d/%m/%y %H:%M:%S')}: #{first_name} #{last_name} #{state} #{offline}"
     end
   end
-  # Сохранение нового значения ts
+
   ts = params['ts']
 end

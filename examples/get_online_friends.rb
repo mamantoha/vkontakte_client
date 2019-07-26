@@ -9,7 +9,6 @@ puts Vkontakte::VERSION
 
 if $PROGRAM_NAME == __FILE__
   CLIENT_ID = '5987497'
-  # Авторизация по логину и паролю
   email = ARGV[0]
   pass  = ARGV[1]
   vk = Vkontakte::Client.new(CLIENT_ID)
@@ -20,11 +19,6 @@ if $PROGRAM_NAME == __FILE__
 
   vk.api.lang = 'en'
   friends = vk.api.friends_get(fields: 'online')
-
-  # Использование токена
-  # access_token = ARGV[0]
-  # api = Vkontakte::API.new(access_token)
-  # friends = api.friends_get(fields:  'online')
 
   friends_online = friends['items'].select { |item| item['online'] == 1 }
 
