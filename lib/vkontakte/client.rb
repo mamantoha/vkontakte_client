@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Vkontakte
+  # :nodoc:
   class Client
     attr_reader :api
     attr_reader :access_token, :user_id, :expires_in, :api_version
