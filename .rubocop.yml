@@ -1,5 +1,8 @@
+AllCops:
+  TargetRubyVersion: 2.6
+
 Metrics/AbcSize:
-  Max: 25
+  Max: 31
 
 Metrics/BlockLength:
   Max: 57
@@ -8,7 +11,7 @@ Metrics/LineLength:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 30
+  Max: 33
 
 Style/AsciiComments:
   Enabled: false
