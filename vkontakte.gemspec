@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'vkontakte'
   gem.require_paths = ['lib']
   gem.version       = Vkontakte::VERSION
+  gem.required_ruby_version = '>= 2.7.0'
   gem.add_runtime_dependency('mechanize')
   gem.add_runtime_dependency('socksify')
   gem.add_development_dependency('pry')

@@ -3,8 +3,7 @@
 module Vkontakte
   # :nodoc:
   class Client
-    attr_reader :api
-    attr_reader :access_token, :user_id, :expires_in, :api_version
+    attr_reader :api, :access_token, :user_id, :expires_in, :api_version
 
     def initialize(
       client_id = nil,
@@ -107,7 +106,7 @@ module Vkontakte
       puts 'Captcha needed.'
       puts "Open url: #{captcha_img['src']}"
       print 'Enter captch: '
-      captcha = STDIN.gets.chomp
+      captcha = $stdin.gets.chomp
 
       form.pass = @pass
       form.captcha_key = captcha
