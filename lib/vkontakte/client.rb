@@ -73,8 +73,14 @@ module Vkontakte
     private
 
     def get_token(page)
-      gragment_regexp = /\Aaccess_token=(?<access_token>.*)&expires_in=(?<expires_in>\d+)&user_id=(?<user_id>\d*)\z/
-      auth_params = page.uri.fragment.match(gragment_regexp)
+      auth_regexp = /access_token=(?<access_token>.*)&expires_in=(?<expires_in>\d+)&user_id=(?<user_id>\d*)\z/
+
+      return false unless page.uri.path == '/auth_redirect'
+
+      query_params = URI.decode_www_form(page.uri.query).to_h
+      authorize_url = CGI.unescape(query_params['authorize_url'])
+
+      auth_params = authorize_url.match(auth_regexp)
 
       return false unless auth_params
 
