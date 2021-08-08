@@ -47,7 +47,7 @@ module Vkontakte
 
       # https://vk.com/dev/implicit_flow_user
       #
-      # Открытие диалога авторизации OAuth
+      # Opening Authorization Dialog
       #
       query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
       url = "https://oauth.vk.com/authorize?#{query_string}"
