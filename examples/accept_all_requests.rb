@@ -3,7 +3,7 @@
 require 'bundler'
 Bundler.setup :default
 
-require 'vkontakte'
+require 'vkontakte_client'
 
 puts Vkontakte::VERSION
 

@@ -8,7 +8,7 @@
 require 'bundler'
 Bundler.setup :default
 
-require 'vkontakte'
+require 'vkontakte_client'
 
 require 'pp'
 require 'date'

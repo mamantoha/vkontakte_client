@@ -1,11 +1,11 @@
-# vkontakte
+# Vkontakte Client
 
 Библиотека для авторизация клиентских приложений и для доступа к API ВКонтакте
 
 ## Использование
 
 ``` ruby
-require 'vkontakte'
+require 'vkontakte_client'
 ```
 
 ## Регистрация приложения

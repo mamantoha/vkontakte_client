@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'vkontakte'
+require 'vkontakte_client'
 
 if $PROGRAM_NAME == __FILE__
   CLIENT_ID = '5987497'

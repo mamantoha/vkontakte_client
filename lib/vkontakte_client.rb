@@ -5,7 +5,6 @@ require 'net/http'
 require 'mechanize'
 require 'socksify'
 require 'socksify_mechanize'
-require 'pry'
 
 require 'vkontakte/version'
 require 'vkontakte/client'

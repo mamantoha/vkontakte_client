@@ -4,7 +4,7 @@ require 'bundler'
 Bundler.setup :default
 
 require 'pp'
-require 'vkontakte'
+require 'vkontakte_client'
 require 'pry'
 
 puts Vkontakte::VERSION
