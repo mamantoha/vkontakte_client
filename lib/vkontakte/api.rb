@@ -3,6 +3,8 @@
 module Vkontakte
   # Make Vkontakte API requests
   #
+  # https://vk.com/dev/api_requests
+  #
   class API
     attr_reader :access_token, :proxy, :api_version, :timeout
     attr_accessor :lang

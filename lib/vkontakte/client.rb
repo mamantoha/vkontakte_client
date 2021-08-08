@@ -5,6 +5,9 @@ module Vkontakte
   class Client
     attr_reader :api, :access_token, :user_id, :expires_in, :api_version
 
+    # Implicit Flow for User Access Token
+    #
+    # https://vk.com/dev/implicit_flow_user
     def initialize(
       client_id = nil,
       api_version: Vkontakte::API_VERSION,
@@ -45,8 +48,7 @@ module Vkontakte
         a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
       end
 
-      # https://vk.com/dev/implicit_flow_user
-      #
+
       # Opening Authorization Dialog
       #
       query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
