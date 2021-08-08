@@ -4,6 +4,16 @@
 
 Ruby library for authorization of client applications and for access to the VK API
 
+## Installing
+
+Add to your `Gemfile`:
+
+```ruby
+gem 'vkontakte_client'
+```
+
+Then `bundle install`
+
 ## Usage
 
 ``` ruby
