@@ -50,7 +50,7 @@ The `login!` method takes the following arguments:
 
 * `email`: user login
 * `pass`: user password
-* `permissions`: requeste [application permissions](https://vk.com/dev/permissions)
+* `permissions`: request [application permissions](https://vk.com/dev/permissions)
 
 ``` ruby
 vk.login!(email, pass, permissions: 'friends')
