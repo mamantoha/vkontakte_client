@@ -1,5 +1,7 @@
 # Vkontakte Client
 
+[![Gem Version](https://img.shields.io/gem/v/vkontakte_client.svg?style=flat)](https://rubygems.org/gems/vkontakte_client)
+
 Ruby library for authorization of client applications and for access to the VK API
 
 ## Usage
