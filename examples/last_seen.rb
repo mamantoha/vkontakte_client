@@ -16,7 +16,7 @@ if $PROGRAM_NAME == __FILE__
   vk = Vkontakte::Client.new(CLIENT_ID)
   vk.login!(email, pass)
 
-  # http://vkontakte.ru/developers.php?o=-1&p=friends.get
+  # https://vk.com/dev/friends.get
   iam     = vk.api.users_get(user_ids: vk.user_id, fields: 'online,last_seen').first
   friends = vk.api.friends_get(fields: 'online,last_seen')['items']
   friends << iam

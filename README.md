@@ -58,7 +58,7 @@ vk.login!(email, pass, permissions: 'friends')
 
 ### API Requests
 
-After successful authorization, you can [make requests to the API](http://vk.com/dev/api_requests) using the method name from the [API function list](http://vk.com/dev/methods).
+After successful authorization, you can [make requests to the API](https://vk.com/dev/api_requests) using the method name from the [API function list](https://vk.com/dev/methods).
 
 The parameters of the corresponding API method are passed as `Hash`.
 Note that a method like `friends.get` needs to be passed as `friends_get`.

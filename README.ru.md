@@ -47,7 +47,7 @@ vk.login!(email, pass, permissions: 'friends')
 
 ### Вызов методов
 
-После успешной авторизации Вы можете [осуществлять запросы к API](http://vk.com/dev/api_requests) используя название метода из [списка функций API](http://vk.com/dev/methods).
+После успешной авторизации Вы можете [осуществлять запросы к API](https://vk.com/dev/api_requests) используя название метода из [списка функций API](https://vk.com/dev/methods).
 
 Параметры соответствующего метода API передаются как `Hash`.
 Следует заметить что метод вида `friends.get` нужно передавать как `friends_get`.
