@@ -14,5 +14,5 @@ require 'vkontakte/proxy'
 require 'vkontakte/ask_for_credentials'
 
 module Vkontakte
-  API_VERSION = '5.101'
+  API_VERSION = '5.131'
 end
