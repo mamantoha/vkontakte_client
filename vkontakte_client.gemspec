@@ -6,8 +6,8 @@ require 'vkontakte/version'
 Gem::Specification.new do |gem|
   gem.authors       = ['Anton Maminov']
   gem.email         = ['anton.maminov@gmail.com']
-  gem.description   = 'Unofficial VKontakte Client for Ruby'
-  gem.summary       = 'Unofficial VKontakte Client for Ruby'
+  gem.description   = 'VKontakte API Client for Ruby'
+  gem.summary       = 'Unofficial VKontakte API Client for Ruby'
   gem.homepage      = 'https://github.com/mamantoha/vkontakte_client'
   gem.licenses      = ['MIT']
 
@@ -18,8 +18,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Vkontakte::VERSION
   gem.required_ruby_version = '>= 2.7.0'
-  gem.add_runtime_dependency('mechanize')
-  gem.add_runtime_dependency('socksify')
-  gem.add_development_dependency('pry')
-  gem.add_development_dependency('rubocop')
+  gem.add_runtime_dependency 'mechanize', '~> 2.8', '>= 2.8.0'
+  gem.add_runtime_dependency 'socksify', '~> 1.7', '>= 1.7.0'
+  gem.add_development_dependency 'pry', '~> 0.14', '>= 0.14.0'
+  gem.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.0'
 end
