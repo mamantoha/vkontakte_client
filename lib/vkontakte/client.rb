@@ -48,7 +48,6 @@ module Vkontakte
         a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
       end
 
-
       # Opening Authorization Dialog
       #
       query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
