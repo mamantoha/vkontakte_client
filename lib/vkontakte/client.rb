@@ -12,13 +12,15 @@ module Vkontakte
       client_id = nil,
       api_version: Vkontakte::API_VERSION,
       proxy: nil,
-      timeout: 60
+      timeout: 60,
+      log: false
     )
       @client_id = client_id
       @api_version = api_version
       @proxy = proxy
       @timeout = timeout
       @authorize = false
+      @log = log
 
       @api = Vkontakte::API.new
     end
@@ -43,6 +45,7 @@ module Vkontakte
       agent = Mechanize.new do |a|
         a.user_agent_alias = 'Linux Firefox'
         a.follow_meta_refresh
+        a.log = Logger.new(STDOUT) if @log
 
         a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy&.socks?
         a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
