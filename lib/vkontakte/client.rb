@@ -45,7 +45,7 @@ module Vkontakte
       agent = Mechanize.new do |a|
         a.user_agent_alias = 'Linux Firefox'
         a.follow_meta_refresh
-        a.log = Logger.new(STDOUT) if @log
+        a.log = Logger.new($stdout) if @log
 
         a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy&.socks?
         a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
