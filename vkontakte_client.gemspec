@@ -22,4 +22,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'socksify', '~> 1.7', '>= 1.7.0'
   gem.add_development_dependency 'pry', '~> 0.14', '>= 0.14.0'
   gem.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.0'
+  gem.metadata['rubygems_mfa_required'] = 'true'
 end
