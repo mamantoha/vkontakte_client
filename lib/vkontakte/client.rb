@@ -42,15 +42,6 @@ module Vkontakte
         v: api_version
       }
 
-      agent = Mechanize.new do |a|
-        a.user_agent_alias = 'Linux Firefox'
-        a.follow_meta_refresh
-        a.log = Logger.new($stdout) if @log
-
-        a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy&.socks?
-        a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
-      end
-
       # Opening Authorization Dialog
       #
       query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
@@ -76,6 +67,32 @@ module Vkontakte
 
     private
 
+    def agent
+      @agent ||= Mechanize.new do |a|
+        a.user_agent_alias = 'Linux Firefox'
+        a.follow_meta_refresh
+        a.log = Logger.new($stdout) if @log
+
+        a.agent.set_socks(@proxy.addr, @proxy.port) if @proxy&.socks?
+        a.agent.set_proxy(@proxy.addr, @proxy.port) if @proxy&.http?
+      end
+    end
+
+    def initialize_vkontakte_api(auth_params)
+      return @api if authorized?
+
+      @access_token = auth_params[:access_token]
+      @user_id      = auth_params[:user_id]
+      @expires_in   = auth_params[:expires_in]
+
+      @api = Vkontakte::API.new(
+        @access_token,
+        proxy: @proxy,
+        api_version: @api_version,
+        timeout: @timeout
+      )
+    end
+
     def get_token(page)
       auth_regexp = /access_token=(?<access_token>.*)&expires_in=(?<expires_in>\d+)&user_id=(?<user_id>\d*)\z/
 
@@ -88,16 +105,7 @@ module Vkontakte
 
       return false unless auth_params
 
-      @access_token = auth_params[:access_token]
-      @user_id      = auth_params[:user_id]
-      @expires_in   = auth_params[:expires_in]
-
-      @api = Vkontakte::API.new(
-        @access_token,
-        proxy: @proxy,
-        api_version: @api_version,
-        timeout: @timeout
-      )
+      initialize_vkontakte_api(auth_params)
 
       @authorize = true
 
