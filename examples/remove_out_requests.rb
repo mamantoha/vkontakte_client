@@ -21,7 +21,7 @@ if $PROGRAM_NAME == __FILE__
   offset = 0
 
   loop do
-    fr = vk.api.friends_getRequests(count: count, offset: offset * count, out: 1)['items']
+    fr = vk.api.friends_getRequests(count:, offset: offset * count, out: 1)['items']
     break if fr.empty?
 
     out_requests << fr

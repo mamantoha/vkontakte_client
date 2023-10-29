@@ -61,14 +61,14 @@ module Vkontakte
             uri.port,
             @proxy.addr,
             @proxy.port,
-            use_ssl: use_ssl,
+            use_ssl:,
             read_timeout: timeout,
             open_timeout: timeout
           ) do |http|
             http.request(request)
           end
         elsif @proxy.socks?
-          Net::HTTP.SOCKSProxy(@proxy.addr, @proxy.port).start(uri.hostname, uri.port, use_ssl: use_ssl) do |http|
+          Net::HTTP.SOCKSProxy(@proxy.addr, @proxy.port).start(uri.hostname, uri.port, use_ssl:) do |http|
             http.request(request)
           end
         end
@@ -76,7 +76,7 @@ module Vkontakte
         Net::HTTP.start(
           uri.hostname,
           uri.port,
-          use_ssl: use_ssl,
+          use_ssl:,
           read_timeout: timeout,
           open_timeout: timeout
         ) do |http|

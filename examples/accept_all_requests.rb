@@ -26,10 +26,10 @@ if $PROGRAM_NAME == __FILE__
     user_ids.each do |user_id|
       print "Accept user with id `#{user_id}`"
       begin
-        vk_api.friends_add(user_id: user_id)
+        vk_api.friends_add(user_id:)
         puts ' - OK'
       rescue Vkontakte::API::Error => e
-        vk_api.account_banUser(user_id: user_id) if e.error_code == 177
+        vk_api.account_banUser(user_id:) if e.error_code == 177
         puts ' - Skip'
       end
     end

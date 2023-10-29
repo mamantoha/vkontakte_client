@@ -35,10 +35,10 @@ module Vkontakte
 
       query = {
         client_id: @client_id,
-        redirect_uri: redirect_uri,
-        display: display,
+        redirect_uri:,
+        display:,
         scope: permissions,
-        response_type: response_type,
+        response_type:,
         v: api_version
       }
 
