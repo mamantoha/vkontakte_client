@@ -69,7 +69,7 @@ module Vkontakte
 
     def agent
       @agent ||= Mechanize.new do |a|
-        a.user_agent_alias = 'Linux Firefox'
+        a.user_agent = 'Opera/9.80 (Android; Opera Mini/7.5.33942/191.308; U; en) Presto/2.12.423 Version/12.16'
         a.follow_meta_refresh
         a.log = Logger.new($stdout) if @log
 
