@@ -10,7 +10,6 @@ Bundler.setup :default
 
 require 'vkontakte_client'
 
-require 'pp'
 require 'date'
 require 'net/http'
 require 'uri'
