@@ -126,6 +126,7 @@ module Vkontakte
       print 'Enter captch: '
       captcha = $stdin.gets.chomp
 
+      form.email = @email
       form.pass = @pass
       form.captcha_key = captcha
       allow_page = form.submit
@@ -133,7 +134,7 @@ module Vkontakte
       allow_form = allow_page.forms.first
       allow_page = allow_form.submit if allow_form&.buttons&.detect { |btn| btn.value == 'Allow' }
 
-      raise('Invalid captcha.') unless allow_page.uri.path == '/blank.html'
+      raise('Invalid captcha.') unless allow_page.uri.path == '/auth_redirect'
 
       allow_page
     end
